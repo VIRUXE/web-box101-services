@@ -1,23 +1,23 @@
 <?php
 echo <<<HTML
-<!DOCTYPE html>
+<!DOCTYPE html data-theme="dark">
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Serviços BOX101</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.css">
 </head>
-<body>
+<body class="has-navbar-fixed-top">
     <header>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" href="index.php">BOX101</a>
 HTML;
 
 if (isset($logged_user)) {
   echo <<<HTML
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navigation">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -25,22 +25,11 @@ if (isset($logged_user)) {
       </a>
     </div>
 
-    <div id="navbarBasicExample" class="navbar-menu">
-    <div class="navbar-start">
-      <a class="navbar-item" href="carros.php">Carros</a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link" href="clientes.php">Clientes</a>
-
-        <!-- <div class="navbar-dropdown">
-          <a class="navbar-item">About</a>
-          <a class="navbar-item is-selected">Jobs</a>
-          <a class="navbar-item">Contact</a>
-          <hr class="navbar-divider">
-          <a class="navbar-item">Report an issue</a>
-        </div> -->
+    <div id="navigation" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="veiculos.php">Veículos</a>
+        <a class="navbar-item" href="clientes.php">Clientes</a>
       </div>
-    </div>
     <div class="navbar-end">
       <div class="navbar-item">
           <strong>$logged_user</strong>

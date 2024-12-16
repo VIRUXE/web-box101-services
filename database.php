@@ -1,4 +1,8 @@
 <?php
-$db = new mysqli('localhost', 'root', '', 'box101');
+try {
+    $db = new mysqli('localhost', 'root', '', 'box101');
 
-if ($db->connect_error) die('Impossível estabelecer ligação à base de dados.\n\n' + $db->connect_error);
+    if ($db->connect_error) throw new Exception('Impossível estabelecer ligação à base de dados: ' . $db->connect_error);
+} catch (Exception $e) {
+    die($e->getMessage());
+}

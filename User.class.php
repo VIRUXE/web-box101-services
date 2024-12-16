@@ -1,36 +1,11 @@
 <?php
-/* 
-    CREATE TABLE `users` (
-        `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-        `email` VARCHAR(254) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-        `first_name` TINYTEXT NOT NULL COLLATE 'utf8mb4_general_ci',
-        `last_name` TINYTEXT NOT NULL COLLATE 'utf8mb4_general_ci',
-        `nif` INT(9) UNSIGNED NULL DEFAULT NULL COMMENT 'Número de Identificação Fiscal',
-        `address` LONGTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_bin',
-        `phone` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_general_ci',
-        `pin` SMALLINT(4) UNSIGNED ZEROFILL NULL DEFAULT NULL,
-        `level` ENUM('CUSTOMER','HELP','ADMIN') NULL DEFAULT 'CUSTOMER' COLLATE 'utf8mb4_general_ci',
-        `active` TINYINT(1) UNSIGNED NULL DEFAULT NULL,
-        PRIMARY KEY (`id`) USING BTREE,
-        UNIQUE INDEX `email` (`email`) USING BTREE,
-        UNIQUE INDEX `nif` (`nif`) USING BTREE
-    )
-    COLLATE='utf8mb4_general_ci'
-    ENGINE=InnoDB
-    AUTO_INCREMENT=3
-    ;
- */
 enum UserLevel: string {
     case Customer = 'CUSTOMER';
     case Helper   = 'HELPER';
     case Admin    = 'ADMIN';
 
     static function toArray(): array {
-        return [
-            UserLevel::Customer,
-            UserLevel::Helper,
-            UserLevel::Admin,
-        ];
+        return [ UserLevel::Customer, UserLevel::Helper, UserLevel::Admin ];
     }
 }
 
@@ -39,10 +14,12 @@ class User {
     public ?string $email;
     public string $first_name;
     public string $last_name;
-    private ?int $nif;
-    private ?string $address;
+    public ?int $nif;
+    public ?string $address;
     public string $phone;
     public UserLevel $level;
+    public int $pin;
+    public ?string $notes;
     public bool $active;
 
     public function __construct(array $user) {
@@ -56,11 +33,17 @@ class User {
         $this->address    = $user['address'];
         $this->phone      = $user['phone'];
         $this->level      = UserLevel::tryFrom($user['level']) ?? UserLevel::Customer;
+        $this->pin        = str_pad($user['pin'], 4, '0', STR_PAD_LEFT);
+        $this->notes      = $user['notes'] ?? NULL;
         $this->active     = (bool) $user['active'];
     }
 
     public function getEmail(): string {
         return $this->email ?? 'N/D';
+    }
+
+    public function renderEmail(): string {
+        return $this->email ? '<a href="mailto:'.$this->email.'">'.$this->email.'</a>' : 'N/D';
     }
 
     public function getNif(): string {
@@ -71,8 +54,20 @@ class User {
         return $this->address ?? 'N/D';
     }
 
+    public function renderAddress(): string {
+        return $this->address ? '<a href="https://maps.google.com/?q='.$this->address.'">'.$this->address.'</a>' : 'N/D';
+    }
+
     public function getPhoneNumber(): string {
         return $this->phone ?? 'N/D';
+    }
+
+    public function getNotes(): string {
+        return $this->notes ? nl2br($this->notes) : 'Não existem notas.';
+    }
+
+    public function getActive(): string {
+        return $this->active ? 'Sim' : 'Não';
     }
 
     public function isCustomer(): bool {

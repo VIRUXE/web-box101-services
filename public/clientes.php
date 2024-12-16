@@ -10,31 +10,27 @@ $logged_user = User::getLogged();
 include '../database.php';
 include 'header.php';
 
-const BASE_QUERY = "SELECT * FROM users";
-
 $search = isset($_GET['pesquisa']) ? $db->real_escape_string($_GET['pesquisa']) : NULL;
 
-$query = $db->query(BASE_QUERY . ($search ? " WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%'" : "") . ';');
+$query = $db->query("SELECT * FROM users" . (
+	$search ? " WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR email LIKE '%$search%' OR phone LIKE '%$search%'" :
+	"") . ';');
 
 echo <<<HTML
 <section class="section">
 	<div class="container">
 HTML;
 
-$count = $query->num_rows;
+$user_count = $query->num_rows;
 
 if ($search) {
-	if (!$count)
+	if (!$user_count)
 		echo '<div class="notification is-warning">Não foram encontrados clientes com o termo de pesquisa "<strong>'.$search.'</strong>".</div>';
 	else {
-		$message = '<div class="notification is-success">';
-		
-		if ($count === 1)
-			$message .= 'Foi encontrado <strong>1</strong> cliente com o termo de pesquisa "<strong>'.$search.'</strong>".';
-		else
-			$message .= 'Foram encontrados <strong>'.$count.'</strong> clientes com o termo de pesquisa "<strong>'.$search.'</strong>".';
-
-		echo $message.'</div>';
+		echo '<div class="notification is-success">' . match ($user_count) {
+			1       => 'Foi encontrado <strong>1</strong> cliente".',
+			default => 'Foram encontrados <strong>'.$user_count.'</strong> clientes'
+		} . ' com o termo de pesquisa "<strong>'.$search.'</strong></div>';
 	}
 }
 
@@ -43,7 +39,7 @@ echo <<<HTML
 		<form method="get">
 			<div class="field has-addons">
 				<div class="control is-expanded">
-					<input class="input" type="text" name="pesquisa" placeholder="Nome, Email ou Telefone do Cliente" value="$search" minlength="2" required>
+					<input class="input" type="text" name="pesquisa" placeholder="Nome, Email ou Telefone do Cliente" value="$search" minlength="1" required>
 				</div>
 				<div class="control">
 					<button class="button is-info" type="submit">Pesquisar</button>
@@ -51,53 +47,54 @@ echo <<<HTML
 			</div>
 		</form>
 		<hr>
-		<a href="adicionar_cliente.php" class="button is-success">Adicionar Cliente</a>
-		<a href="index.php" class="button is-info">Voltar</a>
+		<div class="buttons is-grouped">
+			<a href="criar_cliente.php" class="button">Criar Cliente</a>
+			<a href="" class="button is-text">Voltar</a>
+		</div>
 		<hr>
-		<table class="table is-fullwidth is-hoverable">
-			<thead>
-				<tr>
-					<th>Nome</th>
-					<th>Email</th>
-					<th>Telefone</th>
-					<th>Endereço</th>
-					<th>Ações</th>
-				</tr>
-			</thead>
-			<tbody>
+		<div class="table-container">
+			<table class="table is-fullwidth is-hoverable is-striped is-narrow">
+				<thead>
+					<tr>
+						<th>Nome</th>
+						<th>Contacto Móvel</th>
+						<th>Email</th>
+					</tr>
+				</thead>
+				<tbody>
 HTML;
 
 while ($result = $query->fetch_assoc()) {
 	$user = new User($result);
 
 	echo <<<HTML
-				<tr>
-					<td>
-						<strong>{$user}</strong> 
+					<tr>
+						<td>
+							<a href="cliente.php?id={$user->id}"><strong>{$user}</strong></a> 
 HTML;
 
-	echo match ($user->level) {
-		UserLevel::Admin => '<span class="tag is-danger">Admin</span>',
+	if (!$user->isCustomer()) echo match ($user->level) {
+		UserLevel::Admin  => '<span class="tag is-danger">Admin</span>',
 		UserLevel::Helper => '<span class="tag is-link">Ajudante</span>',
 	};
 
 	echo <<<HTML
-					</td>
-					<td><a href="mailto:{$user->getEmail()}">{$user->getEmail()}</a></td>
-					<td><a href="tel:{$user->getPhoneNumber()}">{$user->getPhoneNumber()}</a></td>
-					<td>{$user->getAddress()}</td>
-					<td>
-						<a href="cliente.php?id={$user->id}" class="button is-link">Ver</a>
-						<a href="editar_cliente.php?id={$user->id}" class="button is-info">Editar</a>
-						<a href="eliminar_cliente.php?id={$user->id}" class="button is-danger">Eliminar</a>
-					</td>
-				</tr>
+						</td>
+						<td><a href="tel:{$user->getPhoneNumber()}">{$user->getPhoneNumber()}</a></td>
+						<td>{$user->renderEmail()}</td>
+					</tr>
 HTML;
 }
 
 echo <<<HTML
-			</tbody>
-		</table>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th colspan="3">Total de Clientes: $user_count</th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
 	</div>
 </section>
 HTML;
