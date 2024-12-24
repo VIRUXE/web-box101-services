@@ -176,7 +176,7 @@ echo <<<HTML
 						<div class="field-body">
 							<div class="field">
 								<div class="control">
-									<textarea name="notes" class="textarea" value="$notes" placeholder="Notas sobre como o veículo se encontra, ou histórico." rows="3"></textarea>
+									<textarea name="notes" class="textarea" placeholder="Notas sobre como o veículo se encontra, ou histórico." rows="3"></textarea>
 								</div>
 							</div>
 						</div>

@@ -50,10 +50,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `nif` (`nif`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table box101.users: ~2 rows (approximately)
-INSERT INTO `users` (`id`, `email`, `first_name`, `last_name`, `nif`, `address`, `phone`, `pin`, `level`, `notes`, `active`) VALUES
+REPLACE INTO `users` (`id`, `email`, `first_name`, `last_name`, `nif`, `address`, `phone`, `pin`, `level`, `notes`, `active`) VALUES
 	(0, 'flavioaspereira@gmail.com', 'Flavio', 'Pereira', NULL, NULL, '0000000000', 0000, 'ADMIN', NULL, 1),
 	(1, 'leandro_leu96@hotmail.com', 'Leandro', 'Silva', 0, '', '0000000000', 0000, 'ADMIN', 'gay do caralho', 1);
 
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `vehicles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table box101.vehicles: ~18 rows (approximately)
-INSERT INTO `vehicles` (`matricula`, `odometer`, `year`, `month`, `brand`, `model`, `colour`, `trim`, `notes`, `registered_by`, `registration_date`) VALUES
+REPLACE INTO `vehicles` (`matricula`, `odometer`, `year`, `month`, `brand`, `model`, `colour`, `trim`, `notes`, `registered_by`, `registration_date`) VALUES
 	('0432SC', 0, '1995', NULL, 'Honda', 'Civic', 'Preto', 'EJ2', 'Do Valério', 0, '2024-08-27 13:00:01'),
 	('0496EV', 0, '1995', 2, 'Honda', 'Civic', 'Preto', 'EJ2', NULL, 0, '2024-08-27 13:00:01'),
 	('1109FP', 0, '1995', 8, 'Vw', 'Golf 3', 'Pleto', 'Variant', NULL, 0, '2024-08-27 13:00:01'),
@@ -93,7 +93,6 @@ INSERT INTO `vehicles` (`matricula`, `odometer`, `year`, `month`, `brand`, `mode
 	('9165MF', 0, '1998', 11, 'Honda', 'Cr-v', 'Azul', 'B20', NULL, 0, '2024-08-27 13:00:01'),
 	('9529FS', 0, '1995', NULL, 'Honda', 'Civic', 'Preto', 'EJ2', 'D15 com 160 cavalos', 0, '2024-08-27 13:00:01'),
 	('9896OP', 0, '1990', 7, 'Honda', 'Crx', 'Preto', '16i16', 'Swap B16A1', 0, '2024-08-27 13:00:01'),
-	('DDWD', 0, NULL, NULL, 'Sdd', 'Dd', NULL, NULL, NULL, 0, '2024-09-05 23:47:58'),
 	('MQ6198', 0, '1990', 7, 'Honda', 'Civic', 'Azul ', 'EC9', '(Casa) Swap K20', 0, '2024-08-27 13:00:01');
 
 -- Dumping structure for table box101.vehicle_services
@@ -101,37 +100,47 @@ DROP TABLE IF EXISTS `vehicle_services`;
 CREATE TABLE IF NOT EXISTS `vehicle_services` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `matricula` varchar(9) NOT NULL DEFAULT '',
-  `description` text DEFAULT NULL COMMENT 'General description of the service',
-  `date` datetime NOT NULL DEFAULT current_timestamp(),
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `starting_date` datetime DEFAULT NULL,
   `created_by` int(10) unsigned NOT NULL,
-  `state` enum('PENDING','PROPOSAL','IN_PROGRESS','AWAITING_APPROVAL','APPROVED','COMPLETED','CANCELLED') NOT NULL DEFAULT 'PENDING',
+  `state` enum('PENDING','PROPOSAL','AWAITING_APPROVAL','APPROVED','IN_PROGRESS','COMPLETED','CANCELLED') NOT NULL DEFAULT 'PENDING',
   `active` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT 'Deleted?',
+  `client_id` int(11) DEFAULT NULL,
+  `starting_odometer` int(11) DEFAULT NULL,
+  `finished_odometer` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `matricula` (`matricula`),
   CONSTRAINT `fk_matricula` FOREIGN KEY (`matricula`) REFERENCES `vehicles` (`matricula`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table box101.vehicle_services: ~0 rows (approximately)
+-- Dumping data for table box101.vehicle_services: ~2 rows (approximately)
+REPLACE INTO `vehicle_services` (`id`, `matricula`, `created_at`, `starting_date`, `created_by`, `state`, `active`, `client_id`, `starting_odometer`, `finished_odometer`) VALUES
+	(1, '0432SC', '2024-12-19 23:22:40', '2024-12-19 00:00:00', 0, 'PENDING', 1, 2, NULL, NULL),
+	(5, '0432SC', '2024-12-23 11:12:23', '2024-12-23 00:00:00', 0, 'PENDING', 1, 1, NULL, NULL);
 
 -- Dumping structure for table box101.vehicle_service_items
 DROP TABLE IF EXISTS `vehicle_service_items`;
 CREATE TABLE IF NOT EXISTS `vehicle_service_items` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `service_id` int(11) unsigned NOT NULL,
-  `service_item_type_id` int(11) unsigned NOT NULL,
-  `added_by` int(11) unsigned NOT NULL,
-  `status` enum('NOT STARTED','STARTED','PAUSED','FAILED','SUCCESS') NOT NULL DEFAULT 'NOT STARTED',
-  `start_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `description` text NOT NULL,
+  `created_by` int(11) unsigned NOT NULL,
+  `status` enum('NOT_STARTED','STARTED','PAUSED','FAILED','SUCCESS') NOT NULL DEFAULT 'NOT_STARTED',
+  `start_date` datetime DEFAULT NULL,
   `start_notes` text DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   `end_notes` text DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `price` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `service_id` (`service_id`),
   CONSTRAINT `service_id` FOREIGN KEY (`service_id`) REFERENCES `vehicle_services` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table box101.vehicle_service_items: ~0 rows (approximately)
+-- Dumping data for table box101.vehicle_service_items: ~2 rows (approximately)
+REPLACE INTO `vehicle_service_items` (`id`, `service_id`, `description`, `created_by`, `status`, `start_date`, `start_notes`, `end_date`, `end_notes`, `created_at`, `price`) VALUES
+	(1, 5, 'muda de oleo', 0, 'PAUSED', '2024-12-23 11:12:23', NULL, NULL, NULL, '2024-12-23 11:12:23', 10),
+	(2, 5, 'troar filtro', 0, 'STARTED', '2024-12-23 11:12:23', NULL, NULL, NULL, '2024-12-23 11:12:23', 10);
 
 -- Dumping structure for table box101.vehicle_service_item_tracking
 DROP TABLE IF EXISTS `vehicle_service_item_tracking`;
@@ -150,6 +159,23 @@ CREATE TABLE IF NOT EXISTS `vehicle_service_item_tracking` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table box101.vehicle_service_item_tracking: ~0 rows (approximately)
+
+-- Dumping structure for table box101.vehicle_service_parts
+DROP TABLE IF EXISTS `vehicle_service_parts`;
+CREATE TABLE IF NOT EXISTS `vehicle_service_parts` (
+  `id` int(11) DEFAULT NULL,
+  `service_id` int(11) DEFAULT NULL,
+  `added_by` int(11) DEFAULT NULL,
+  `description` int(11) DEFAULT NULL,
+  `customer_price` int(11) DEFAULT NULL,
+  `supplier_paid` int(11) DEFAULT NULL,
+  `supplier_price` int(11) DEFAULT NULL,
+  `supplier_discount` int(11) DEFAULT NULL,
+  `origin` int(11) DEFAULT NULL,
+  `quantity` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table box101.vehicle_service_parts: ~0 rows (approximately)
 
 -- Dumping structure for trigger box101.set_default_pin
 DROP TRIGGER IF EXISTS `set_default_pin`;
