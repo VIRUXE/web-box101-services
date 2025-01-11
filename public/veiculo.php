@@ -53,7 +53,7 @@ if ($matricula) {
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Data</th>
+                            <th>Data/Hora</th>
                             <th>Kms</th>
                             <th>Estado</th>
                             <th class="is-hidden-mobile">Status</th>
@@ -70,7 +70,7 @@ if ($matricula) {
                 vs.state,
                 vs.active,
                 vs.starting_odometer,
-                DATE_FORMAT(vs.starting_date, '%d/%m/%Y') as start_date,
+                DATE_FORMAT(vs.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
                 CONCAT(u.first_name, ' ', u.last_name) as created_by,
                 COALESCE(SUM(vsi.price), 0) as total_price
             FROM vehicle_services vs
@@ -78,7 +78,7 @@ if ($matricula) {
             LEFT JOIN users u ON vs.created_by = u.id
             WHERE vs.matricula = '$matricula'
             GROUP BY vs.id
-            ORDER BY vs.starting_date DESC
+            ORDER BY vs.created_at DESC
         ");
 
         $services_count = $query->num_rows;
@@ -111,8 +111,8 @@ if ($matricula) {
             
             echo <<<HTML
                 <tr>
-                    <td><a href="servico.php?id={$service->id}">{$service->id}</a></td>
-                    <td>{$service->start_date}</td>
+                    <td>{$service->id}</td>
+                    <td><a href="servico.php?id={$service->id}">{$service->created_at}</a></td>
                     <td>{$service->starting_odometer}</td>
                     <td><span class="tag $state_tag is-normal">$state_text</span></td>
                     <td class="is-hidden-mobile"><span class="tag $active_tag is-normal">$active_text</span></td>
