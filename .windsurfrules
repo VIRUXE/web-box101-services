@@ -1,0 +1,4 @@
+Use HEREDOC for outputting HTML.
+Use MySQLi for database queries, that is established in ./database.php.
+Use Bulma for styling.
+Use PHP 8.4 or higher.
