@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_services` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `starting_date` datetime DEFAULT NULL COMMENT 'When the service is supposed to start',
   `created_by` int(10) unsigned NOT NULL,
-  `state` enum('PENDING','PROPOSAL','AWAITING_APPROVAL','APPROVED','IN_PROGRESS','COMPLETED','CANCELLED') NOT NULL DEFAULT 'PENDING',
+  `state` enum('PENDING','AWAITING_APPROVAL','APPROVED','IN_PROGRESS','COMPLETED','CANCELLED') NOT NULL DEFAULT 'PENDING',
   `active` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT 'Deleted?',
   `client_id` int(11) DEFAULT NULL,
   `starting_odometer` int(11) DEFAULT NULL,

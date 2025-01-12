@@ -142,7 +142,6 @@ if ($matricula) {
 							<div class="select">
 								<select name="state">
 									<option value="PENDING">Pendente</option>
-									<option value="PROPOSAL">Orçamento</option>
 									<option value="AWAITING_APPROVAL">A Aguardar Aprovação</option>
 									<option value="APPROVED">Aprovado</option>
 									<option value="IN_PROGRESS">Em Execução</option>

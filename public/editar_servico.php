@@ -67,7 +67,6 @@ if ($id) {
         $items = $db->query("SELECT * FROM vehicle_service_items WHERE service_id = $id ORDER BY id ASC");
 
         $pendingSelected    = $service->state == 'PENDING' ? 'selected' : '';
-        $proposalSelected   = $service->state == 'PROPOSAL' ? 'selected' : '';
         $inProgressSelected = $service->state == 'IN_PROGRESS' ? 'selected' : '';
         $completedSelected  = $service->state == 'COMPLETED' ? 'selected' : '';
         $cancelledSelected  = $service->state == 'CANCELLED' ? 'selected' : '';
@@ -108,7 +107,6 @@ if ($id) {
                             <div class="select">
                                 <select name="state">
                                     <option value="PENDING" {$pendingSelected}>Pendente</option>
-                                    <option value="PROPOSAL" {$proposalSelected}>Proposta</option>
                                     <option value="IN_PROGRESS" {$inProgressSelected}>Em Progresso</option>
                                     <option value="COMPLETED" {$completedSelected}>Concluído</option>
                                     <option value="CANCELLED" {$cancelledSelected}>Cancelado</option>

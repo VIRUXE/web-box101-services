@@ -86,7 +86,6 @@ if ($matricula) {
         while ($service = $query->fetch_object()) {
             $state_tag = match($service->state) {
                 'PENDING' => 'is-warning',
-                'PROPOSAL' => 'is-light',
                 'AWAITING_APPROVAL' => 'is-warning',
                 'APPROVED' => 'is-success',
                 'IN_PROGRESS' => 'is-info',
@@ -97,7 +96,6 @@ if ($matricula) {
             
             $state_text = match($service->state) {
                 'PENDING' => 'Pendente',
-                'PROPOSAL' => 'Proposta',
                 'AWAITING_APPROVAL' => 'Aguarda Aprovação',
                 'APPROVED' => 'Aprovado',
                 'IN_PROGRESS' => 'Em Progresso',
