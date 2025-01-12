@@ -13,15 +13,7 @@ $total_items_cost = 0;
 
 echo <<<HTML
     <hr>
-    <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
-        <h2 class="title is-4 mb-0">Items</h2>
-        <button class="button is-primary is-small" onclick="openItemModal()">
-            <span class="icon">
-                <i class="fas fa-plus"></i>
-            </span>
-            <span>Adicionar Item</span>
-        </button>
-    </div>
+    <h2 class="title is-4">Itens</h2>
     <div class="table-container">
         <table class="table is-fullwidth is-hoverable is-striped is-narrow">
             <thead>
@@ -42,7 +34,6 @@ if (!$items_query->num_rows) {
         </table>
     </div>
     HTML;
-    include 'items_modal.php';
     return;
 }
 
@@ -107,5 +98,3 @@ echo <<<HTML
 </tbody>
 </table>
 HTML;
-
-include 'items_modal.php';
