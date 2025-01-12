@@ -70,7 +70,48 @@ if ($id) {
         
         $starting_odometer = $service->starting_odometer ?: 'N/D';
         $finished_odometer = $service->finished_odometer ?: 'N/D';
-        
+
+        $total_parts_cost = 0;
+        $total_supplier_cost = 0;
+
+        // Get parts information
+        $parts_stmt = $db->prepare("
+            SELECT 
+                SUM(customer_price * quantity) as total_parts_cost,
+                SUM(supplier_price * quantity) as total_supplier_cost,
+                SUM(CASE WHEN supplier_paid = 0 THEN supplier_price * quantity ELSE 0 END) as unpaid_supplier_cost
+            FROM vehicle_service_parts 
+            WHERE service_id = ?
+        ");
+        $parts_stmt->bind_param('i', $service->id);
+        $parts_stmt->execute();
+        $parts_result = $parts_stmt->get_result();
+
+        if ($parts_row = $parts_result->fetch_object()) {
+            $total_parts_cost     = $parts_row->total_parts_cost ?? 0;
+            $total_supplier_cost  = $parts_row->total_supplier_cost ?? 0;
+            $unpaid_supplier_cost = $parts_row->unpaid_supplier_cost ?? 0;
+            $paid_supplier_cost   = $total_supplier_cost - $unpaid_supplier_cost;
+        }
+
+        $formatted_labor_total     = number_format($service->labor_total ?? 0, 2, ',', '.');
+        $formatted_supplier_cost   = number_format($total_supplier_cost, 2, ',', '.');
+        $formatted_paid_supplier   = number_format($paid_supplier_cost, 2, ',', '.');
+        $formatted_unpaid_supplier = number_format($unpaid_supplier_cost, 2, ',', '.');
+        $formatted_profit          = number_format(($total_parts_cost + ($service->labor_total ?? 0)) - $total_supplier_cost, 2, ',', '.');
+        $formatted_customer_total  = number_format($total_parts_cost + ($service->labor_total ?? 0), 2, ',', '.');
+
+        $status = match($service->state) {
+            'PENDING' => ['text' => 'Pendente', 'class' => 'is-warning'],
+            'PROPOSAL' => ['text' => 'Proposta', 'class' => 'is-info'],
+            'AWAITING_APPROVAL' => ['text' => 'Aguarda Aprovação', 'class' => 'is-warning'],
+            'APPROVED' => ['text' => 'Aprovado', 'class' => 'is-success'],
+            'IN_PROGRESS' => ['text' => 'Em Progresso', 'class' => 'is-info'],
+            'COMPLETED' => ['text' => 'Concluído', 'class' => 'is-success'],
+            'CANCELLED' => ['text' => 'Cancelado', 'class' => 'is-danger'],
+            default => ['text' => $service->state, 'class' => 'is-light'],
+        };
+
         echo <<<HTML
             <div class="columns is-vcentered mb-4">
                 <div class="column">
@@ -98,7 +139,7 @@ if ($id) {
             </div>
 
             <div class="columns is-multiline">
-                <!-- Vehicle Info -->
+                <!-- Service Status -->
                 <div class="column is-half is-flex">
                     <div class="box is-flex-grow-1">
                         <h2 class="title is-4">Informação do Veículo</h2>
@@ -111,8 +152,8 @@ if ($id) {
                         </div>
                     </div>
                 </div>
-                
-                <!-- Client Info -->
+
+                <!-- Service Costs Overview -->
                 <div class="column is-half is-flex">
                     <div class="box is-flex-grow-1">
                         <h2 class="title is-4">Informação do Cliente</h2>
@@ -124,7 +165,7 @@ if ($id) {
                     </div>
                 </div>
 
-                <!-- Service Status -->
+                <!-- Vehicle Info -->
                 <div class="column is-half is-flex">
                     <div class="box is-flex-grow-1">
                         <h2 class="title is-4">Estado do Serviço</h2>
@@ -136,40 +177,8 @@ if ($id) {
                         </div>
                     </div>
                 </div>
-
-                <!-- Service Costs Overview -->
-HTML;
-
-        $total_parts_cost = 0;
-        $total_supplier_cost = 0;
-
-        // Get parts information
-        $parts_stmt = $db->prepare("
-            SELECT 
-                SUM(customer_price * quantity) as total_parts_cost,
-                SUM(supplier_price * quantity) as total_supplier_cost,
-                SUM(CASE WHEN supplier_paid = 0 THEN supplier_price * quantity ELSE 0 END) as unpaid_supplier_cost
-            FROM vehicle_service_parts 
-            WHERE service_id = ?
-        ");
-        $parts_stmt->bind_param('i', $service->id);
-        $parts_stmt->execute();
-        $parts_result = $parts_stmt->get_result();
-
-        if ($parts_row = $parts_result->fetch_object()) {
-            $total_parts_cost     = $parts_row->total_parts_cost ?? 0;
-            $total_supplier_cost  = $parts_row->total_supplier_cost ?? 0;
-            $unpaid_supplier_cost = $parts_row->unpaid_supplier_cost ?? 0;
-        }
-
-        $formatted_parts_total     = number_format($total_parts_cost, 2, ',', '.');
-        $formatted_labor_total     = number_format($service->labor_total ?? 0, 2, ',', '.');
-        $formatted_supplier_cost   = number_format($total_supplier_cost, 2, ',', '.');
-        $formatted_unpaid_supplier = number_format($unpaid_supplier_cost, 2, ',', '.');
-        $formatted_profit          = number_format(($total_parts_cost + ($service->labor_total ?? 0)) - $total_supplier_cost, 2, ',', '.');
-        $formatted_customer_total  = number_format($total_parts_cost + ($service->labor_total ?? 0), 2, ',', '.');
-
-        echo <<<HTML
+                
+                <!-- Client Info -->
                 <div class="column is-half is-flex">
                     <div class="box is-flex-grow-1">
                         <h2 class="title is-4">Resumo dos Custos do Serviço</h2>
