@@ -39,11 +39,11 @@ function editPart(partId) {
             document.getElementById('partModal').classList.add('is-active');
         } else alert(data.error);
     })
-    .catch(error => alert('Error loading part details'));
+    .catch(error => alert('Erro ao obter peça'));
 }
 
 function deletePart(partId) {
-    if (!confirm('Are you sure you want to delete this part?')) return;
+    if (!confirm('Tem a certeza que deseja excluir esta peça?')) return;
 
     const formData = new FormData();
     formData.append('action', 'delete_part');
@@ -59,7 +59,7 @@ function deletePart(partId) {
         if (data.success) location.reload();
         else alert(data.error);
     })
-    .catch(error => alert('Error deleting part'));
+    .catch(error => alert('Erro ao excluir peça'));
 }
 
 function handlePartSubmit(event) {
@@ -78,17 +78,17 @@ function handlePartSubmit(event) {
             location.reload();
         } else alert(data.error);
     })
-    .catch(error => alert('Error saving part'));
+    .catch(error => alert('Erro ao salvar peça'));
     return false;
 }
 </script>
 HTML;
 
 $stmt = $db->prepare("SELECT vsp.*, CONCAT(u.first_name, ' ', u.last_name) as added_by_name FROM vehicle_service_parts vsp LEFT JOIN users u ON vsp.added_by = u.id WHERE vsp.service_id = ? ORDER BY vsp.id DESC");
-if (!$stmt) die("Database error: " . $db->error);
+if (!$stmt) die("Erro de base de dados: " . $db->error);
 
 $stmt->bind_param('i', $service_id);
-if (!$stmt->execute()) die("Query failed: " . $stmt->error);
+if (!$stmt->execute()) die("Consulta falhou: " . $stmt->error);
 
 $result = $stmt->get_result();
 $total_parts_cost = 0;
@@ -122,11 +122,11 @@ while ($part = $result->fetch_object()) {
     $total_parts_cost += floatval($part->customer_price) * $part->quantity;
     if ($part->supplier_price) $total_supplier_cost += floatval($part->supplier_price) * $part->quantity;
 
-    $supplier_price = $part->supplier_price ? number_format(floatval($part->supplier_price), 2, ',', '.') : '-';
-    $customer_price = number_format(floatval($part->customer_price), 2, ',', '.');
+    $supplier_price    = $part->supplier_price ? number_format(floatval($part->supplier_price), 2, ',', '.') : '-';
+    $customer_price    = number_format(floatval($part->customer_price), 2, ',', '.');
     $supplier_discount = $part->supplier_discount ? "{$part->supplier_discount}%" : '-';
-    $origin = $part->origin ?: '-';
-    $paid_status = $part->supplier_paid ? '<span class="tag is-success">Sim</span>' : '<span class="tag is-warning">Não</span>';
+    $origin            = $part->origin ?: '-';
+    $paid_status       = $part->supplier_paid ? '<span class="tag is-success">Sim</span>' : '<span class="tag is-warning">Não</span>';
 
     echo <<<HTML
         <tr>
@@ -152,7 +152,7 @@ while ($part = $result->fetch_object()) {
     HTML;
 }
 
-$total_parts_cost = number_format($total_parts_cost, 2, ',', '.');
+$total_parts_cost    = number_format($total_parts_cost, 2, ',', '.');
 $total_supplier_cost = number_format($total_supplier_cost, 2, ',', '.');
 
 echo <<<HTML
