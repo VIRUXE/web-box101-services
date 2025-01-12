@@ -102,14 +102,13 @@ if ($id) {
         $formatted_customer_total  = number_format($total_parts_cost + ($service->labor_total ?? 0), 2, ',', '.');
 
         $status = match($service->state) {
-            'PENDING' => ['text' => 'Pendente', 'class' => 'is-warning'],
-            'PROPOSAL' => ['text' => 'Proposta', 'class' => 'is-info'],
-            'AWAITING_APPROVAL' => ['text' => 'Aguarda Aprovação', 'class' => 'is-warning'],
-            'APPROVED' => ['text' => 'Aprovado', 'class' => 'is-success'],
-            'IN_PROGRESS' => ['text' => 'Em Progresso', 'class' => 'is-info'],
-            'COMPLETED' => ['text' => 'Concluído', 'class' => 'is-success'],
-            'CANCELLED' => ['text' => 'Cancelado', 'class' => 'is-danger'],
-            default => ['text' => $service->state, 'class' => 'is-light'],
+            'PENDING' => ['text' => 'Pendente', 'class' => 'is-warning', 'meaning' => 'Não foi enviado para aprovação.'],
+            'AWAITING_APPROVAL' => ['text' => 'Aguarda Aprovação', 'class' => 'is-warning', 'meaning' => 'A aguardar pelo cliente.'],
+            'APPROVED' => ['text' => 'Aprovado', 'class' => 'is-success', 'meaning' => 'Aprovado e a aguardar execução.'],
+            'IN_PROGRESS' => ['text' => 'Em Progresso', 'class' => 'is-info', 'meaning' => 'Serviço em andamento.'],
+            'COMPLETED' => ['text' => 'Concluído', 'class' => 'is-success', 'meaning' => 'O serviço foi concluído.'],
+            'CANCELLED' => ['text' => 'Cancelado', 'class' => 'is-danger', 'meaning' => 'O serviço foi cancelado.'],
+            default => ['text' => $service->state, 'class' => 'is-light', 'meaning' => 'Estado desconhecido.'],
         };
 
         echo <<<HTML
@@ -141,7 +140,7 @@ if ($id) {
                     <div class="box is-flex-grow-1">
                         <h2 class="title is-4">Estado do Serviço</h2>
                         <div class="content">
-                            <p><strong>Estado:</strong> <span class="tag {$status['class']}">{$status['text']}</span></p>
+                            <p><strong>Estado:</strong> <span class="tag {$status['class']}">{$status['text']}</span> <span class="has-text-grey is-size-7 has-text-weight-medium">{$status['meaning']}</span></p>
                             <p><strong>Criado por:</strong> {$service->created_by_name}</p>
                             <p><strong>Criado em:</strong> {$service->created_at}</p>
                             <p><strong>Última atualização:</strong> {$service->last_update}</p>
