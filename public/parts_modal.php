@@ -39,19 +39,11 @@ echo <<<HTML
                     </div>
 
                     <div class="columns is-mobile">
-                        <div class="column">
+                        <div class="column is-half">
                             <div class="field">
                                 <label class="label">Quantidade</label>
                                 <div class="control">
                                     <input class="input" type="number" name="quantity" value="1" min="1" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="column">
-                            <div class="field">
-                                <label class="label">Preço Cliente (€)</label>
-                                <div class="control">
-                                    <input class="input" type="number" name="customer_price" step="0.01" required>
                                 </div>
                             </div>
                         </div>
@@ -81,7 +73,7 @@ echo <<<HTML
                         <div class="columns is-mobile">
                             <div class="column">
                                 <div class="field">
-                                    <label class="label">Origem</label>
+                                    <label class="label">Origem/Fornecedor</label>
                                     <div class="control">
                                         <input class="input" type="text" name="origin" list="origins">
                                         <datalist id="origins">
@@ -108,6 +100,27 @@ echo <<<HTML
                             </div>
                         </div>
                     </div>
+
+                    <div class="columns is-mobile">
+                        <div class="column">
+                            <div class="field">
+                                <label class="label">Preço Cliente (€)</label>
+                                <div class="control">
+                                    <input class="input" type="number" name="customer_price" step="0.01" required>
+                                </div>
+                                <p class="help" id="markup_info"></p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field">
+                                <label class="label">Quanto queres lixar o cliente?</label>
+                                <div class="control">
+                                    <input class="slider is-fullwidth" step="1" min="0" max="500" value="30" type="range" id="markup_slider" disabled>
+                                </div>
+                                <p class="help has-text-centered"><span id="slider_value">30</span>%</p>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </section>
             <footer class="modal-card-foot">
@@ -117,3 +130,52 @@ echo <<<HTML
         </div>
     </div>
 HTML;
+
+?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const supplierPriceInput = document.querySelector('input[name="supplier_price"]');
+    const customerPriceInput = document.querySelector('input[name="customer_price"]');
+    const markupSlider = document.getElementById('markup_slider');
+    const sliderValue = document.getElementById('slider_value');
+    const markupInfo = document.getElementById('markup_info');
+
+    function calculateMarkup() {
+        const supplierPrice = parseFloat(supplierPriceInput.value) || 0;
+        const customerPrice = parseFloat(customerPriceInput.value) || 0;
+        
+        if (supplierPrice > 0 && customerPrice > 0) {
+            const markup = ((customerPrice - supplierPrice) / supplierPrice * 100).toFixed(1);
+            markupInfo.textContent = `Margem atual: ${markup}%`;
+            markupInfo.classList.remove('is-danger');
+        } else markupInfo.textContent = '';
+    }
+
+    function updateCustomerPrice() {
+        const supplierPrice = parseFloat(supplierPriceInput.value) || 0;
+        const markup = parseFloat(markupSlider.value) || 0;
+        
+        if (supplierPrice > 0) {
+            const newPrice = (supplierPrice * (1 + markup/100)).toFixed(2);
+            customerPriceInput.value = newPrice;
+            calculateMarkup();
+        }
+    }
+
+    supplierPriceInput.addEventListener('input', function() {
+        markupSlider.disabled = !this.value;
+        if (this.value) updateCustomerPrice();
+        else {
+            markupInfo.textContent = '';
+            customerPriceInput.value = '';
+        }
+    });
+
+    markupSlider.addEventListener('input', function() {
+        sliderValue.textContent = this.value;
+        updateCustomerPrice();
+    });
+
+    customerPriceInput.addEventListener('input', calculateMarkup);
+});
+</script>
