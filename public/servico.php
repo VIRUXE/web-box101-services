@@ -54,7 +54,8 @@ if ($id) {
             service.created_at,
             COALESCE(SUM(servicePart.customer_price), 0) as parts_total,
             COALESCE(SUM(serviceItem.price), 0) as labor_total,
-            (COALESCE(SUM(servicePart.customer_price), 0) + COALESCE(SUM(serviceItem.price), 0)) as total_cost
+            (COALESCE(SUM(servicePart.customer_price), 0) + COALESCE(SUM(serviceItem.price), 0)) as total_cost,
+            service.paid_amount
         FROM vehicle_services service
         LEFT JOIN vehicles vehicle ON service.matricula = vehicle.matricula
         LEFT JOIN users creator ON service.created_by = creator.id
@@ -67,6 +68,8 @@ if ($id) {
 
     if ($query->num_rows) {
         $service = $query->fetch_object();
+
+        $paid_amount = number_format($service->paid_amount ?? 0, 2, ',', '.');
         
         $starting_odometer = $service->starting_odometer ?: 'N/D';
         $finished_odometer = $service->finished_odometer ?: 'N/D';
@@ -102,7 +105,7 @@ if ($id) {
         $formatted_customer_total  = number_format($total_parts_cost + ($service->labor_total ?? 0), 2, ',', '.');
 
         $status = match($service->state) {
-            'PENDING' => ['text' => 'Pendente', 'class' => 'is-warning', 'meaning' => 'Não foi enviado para aprovação.'],
+            'PENDING' => ['text' => 'Pendente', 'class' => 'is-warning', 'meaning' => 'Não foi enviado para o cliente.'],
             'AWAITING_APPROVAL' => ['text' => 'Aguarda Aprovação', 'class' => 'is-warning', 'meaning' => 'A aguardar pelo cliente.'],
             'APPROVED' => ['text' => 'Aprovado', 'class' => 'is-success', 'meaning' => 'Aprovado e a aguardar execução.'],
             'IN_PROGRESS' => ['text' => 'Em Progresso', 'class' => 'is-info', 'meaning' => 'Serviço em andamento.'],
@@ -155,8 +158,8 @@ if ($id) {
                         <div class="content">
                             <p><strong>Total de Peças (Custo):</strong> €{$formatted_supplier_cost} <span class="tag is-success">Pago: €{$formatted_paid_supplier}</span>
                             <span class="tag is-warning ml-2">Por Pagar: €{$formatted_unpaid_supplier}</span></p>
+                            <p><strong>Cliente Pagou:</strong> €$paid_amount/€$formatted_customer_total</p>
                             <p><strong>Lucro Total:</strong> €{$formatted_profit}</p>
-                            <p><strong>Custo Total para o Cliente:</strong> €{$formatted_customer_total}</p>
                         </div>
                     </div>
                 </div>

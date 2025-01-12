@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_services` (
   `client_id` int(11) DEFAULT NULL,
   `starting_odometer` int(11) DEFAULT NULL,
   `finished_odometer` int(11) DEFAULT NULL,
+  `paid_amount` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `matricula` (`matricula`),
   CONSTRAINT `fk_matricula` FOREIGN KEY (`matricula`) REFERENCES `vehicles` (`matricula`) ON DELETE NO ACTION ON UPDATE NO ACTION
