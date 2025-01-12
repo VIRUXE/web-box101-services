@@ -139,6 +139,32 @@ if ($id) {
                 <!-- Service Status -->
                 <div class="column is-half is-flex">
                     <div class="box is-flex-grow-1">
+                        <h2 class="title is-4">Estado do Serviço</h2>
+                        <div class="content">
+                            <p><strong>Estado:</strong> <span class="tag {$status['class']}">{$status['text']}</span></p>
+                            <p><strong>Criado por:</strong> {$service->created_by_name}</p>
+                            <p><strong>Criado em:</strong> {$service->created_at}</p>
+                            <p><strong>Última atualização:</strong> {$service->last_update}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Costs Overview -->
+                <div class="column is-half is-flex">
+                    <div class="box is-flex-grow-1">
+                        <h2 class="title is-4">Resumo dos Custos do Serviço</h2>
+                        <div class="content">
+                            <p><strong>Total de Peças (Custo):</strong> €{$formatted_supplier_cost} <span class="tag is-success">Pago: €{$formatted_paid_supplier}</span>
+                            <span class="tag is-warning ml-2">Por Pagar: €{$formatted_unpaid_supplier}</span></p>
+                            <p><strong>Lucro Total:</strong> €{$formatted_profit}</p>
+                            <p><strong>Custo Total para o Cliente:</strong> €{$formatted_customer_total}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Info -->
+                <div class="column is-half is-flex">
+                    <div class="box is-flex-grow-1">
                         <h2 class="title is-4">Informação do Veículo</h2>
                         <div class="content">
                             <p><strong>Marca:</strong> {$service->brand}</p>
@@ -149,8 +175,8 @@ if ($id) {
                         </div>
                     </div>
                 </div>
-
-                <!-- Service Costs Overview -->
+                
+                <!-- Client Info -->
                 <div class="column is-half is-flex">
                     <div class="box is-flex-grow-1">
                         <h2 class="title is-4">Informação do Cliente</h2>
@@ -158,32 +184,6 @@ if ($id) {
                             <p><strong>Nome:</strong> {$service->client_first_name} {$service->client_last_name}</p>
                             <p><strong>Telefone:</strong> {$service->client_phone}</p>
                             <p><strong>Email:</strong> {$service->client_email}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Vehicle Info -->
-                <div class="column is-half is-flex">
-                    <div class="box is-flex-grow-1">
-                        <h2 class="title is-4">Estado do Serviço</h2>
-                        <div class="content">
-                            <p><strong>Estado:</strong> {$service->state}</p>
-                            <p><strong>Criado por:</strong> {$service->created_by_name}</p>
-                            <p><strong>Criado em:</strong> {$service->created_at}</p>
-                            <p><strong>Última atualização:</strong> {$service->last_update}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Client Info -->
-                <div class="column is-half is-flex">
-                    <div class="box is-flex-grow-1">
-                        <h2 class="title is-4">Resumo dos Custos do Serviço</h2>
-                        <div class="content">
-                            <p><strong>Total de Peças (Custo):</strong> €{$formatted_supplier_cost}</p>
-                            <p><strong>Custo Total de Peças (Pago/Por Pagar):</strong> €{$formatted_supplier_cost} / €{$formatted_unpaid_supplier}</p>
-                            <p><strong>Lucro Total:</strong> €{$formatted_profit}</p>
-                            <p><strong>Custo Total para o Cliente:</strong> €{$formatted_customer_total}</p>
                         </div>
                     </div>
                 </div>
