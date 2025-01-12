@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_services` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `matricula` varchar(9) NOT NULL DEFAULT '',
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `starting_date` datetime DEFAULT NULL,
+  `starting_date` datetime DEFAULT NULL COMMENT 'When the service is supposed to start',
   `created_by` int(10) unsigned NOT NULL,
   `state` enum('PENDING','PROPOSAL','AWAITING_APPROVAL','APPROVED','IN_PROGRESS','COMPLETED','CANCELLED') NOT NULL DEFAULT 'PENDING',
   `active` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT 'Deleted?',
@@ -163,16 +163,22 @@ CREATE TABLE IF NOT EXISTS `vehicle_service_item_tracking` (
 -- Dumping structure for table box101.vehicle_service_parts
 DROP TABLE IF EXISTS `vehicle_service_parts`;
 CREATE TABLE IF NOT EXISTS `vehicle_service_parts` (
-  `id` int(11) DEFAULT NULL,
-  `service_id` int(11) DEFAULT NULL,
-  `added_by` int(11) DEFAULT NULL,
-  `description` int(11) DEFAULT NULL,
-  `customer_price` int(11) DEFAULT NULL,
-  `supplier_paid` int(11) DEFAULT NULL,
-  `supplier_price` int(11) DEFAULT NULL,
-  `supplier_discount` int(11) DEFAULT NULL,
-  `origin` int(11) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier for the part',
+  `service_id` int(11) unsigned NOT NULL COMMENT 'Reference to the associated service',
+  `added_by` int(11) unsigned NOT NULL COMMENT 'User who added the part',
+  `description` text NOT NULL COMMENT 'Description of the part',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'When this part was added to the service',
+  `customer_price` decimal(10,2) NOT NULL COMMENT 'Price charged to the customer',
+  `supplier_paid` tinyint(1) DEFAULT 0 COMMENT 'Indicates if the supplier has been paid',
+  `supplier_price` decimal(10,2) DEFAULT NULL COMMENT 'Price paid to the supplier',
+  `supplier_discount` int(11) DEFAULT NULL COMMENT 'Discount applied by the supplier',
+  `origin` varchar(255) DEFAULT NULL COMMENT 'Origin of the part',
+  `quantity` int(11) NOT NULL DEFAULT 1 COMMENT 'Quantity of the part being added',
+  PRIMARY KEY (`id`),
+  KEY `service_id` (`service_id`),
+  KEY `added_by` (`added_by`),
+  CONSTRAINT `fk_parts_service_id` FOREIGN KEY (`service_id`) REFERENCES `vehicle_services` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parts_added_by` FOREIGN KEY (`added_by`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table box101.vehicle_service_parts: ~0 rows (approximately)
