@@ -116,9 +116,6 @@ if ($id) {
             <div class="columns is-vcentered mb-4">
                 <div class="column">
                     <h1 class="title is-3 mb-0">Serviço #{$service->id}</h1>
-                    <p class="subtitle is-6 mt-1 mb-0">
-                        Criado por <a href="cliente.php?id={$service->created_by}">{$service->created_by_name}</a> em {$service->created_at}
-                    </p>
                 </div>
                 <div class="column is-12-mobile is-narrow-tablet">
                     <div class="buttons is-right">
