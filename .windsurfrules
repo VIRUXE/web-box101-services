@@ -1,5 +1,5 @@
 Use HEREDOC for outputting HTML.
-Use MySQLi for database queries, that is established in ./database.php. Not forgetting to check ./database.sql when creating new queries.
+Use MySQLi for database queries, that is established in/database.php. Not forgetting to check /database.sql when creating new queries.
 Use Bulma for styling.
 Use PHP 8.4 or higher.
 Strings literals should be in European Portuguese.
