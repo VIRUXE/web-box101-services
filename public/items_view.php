@@ -97,4 +97,32 @@ echo <<<HTML
     </tr>
 </tbody>
 </table>
+<script>
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.onclick = async function() {
+            try {
+                const response = await fetch('item_action.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: btn.dataset.action,
+                        item_id: btn.dataset.itemId
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                // Reload the page to show updated status
+                location.reload();
+            } catch (error) {
+                alert('Erro ao processar ação: ' + error.message);
+            }
+        };
+    });
+</script>
+</div>
 HTML;
