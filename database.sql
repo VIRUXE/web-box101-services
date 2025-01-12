@@ -174,6 +174,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_service_parts` (
   `supplier_discount` int(11) DEFAULT NULL COMMENT 'Discount applied by the supplier',
   `origin` varchar(255) DEFAULT NULL COMMENT 'Origin of the part',
   `quantity` int(11) NOT NULL DEFAULT 1 COMMENT 'Quantity of the part being added',
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Indicates if the part has been deleted',
   PRIMARY KEY (`id`),
   KEY `service_id` (`service_id`),
   KEY `added_by` (`added_by`),

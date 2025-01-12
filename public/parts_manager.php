@@ -35,13 +35,13 @@ if ($action === 'add_part' || $action === 'edit_part') {
     $service_id = intval($_POST['service_id'] ?? 0);
     if ($service_id <= 0) die(json_encode(['error' => 'Invalid service ID']));
 
-    $quantity = intval($_POST['quantity'] ?? 1);
-    $customer_price = floatval(str_replace('.', ',', $_POST['customer_price'] ?? '0')); // updated currency format to EURO
-    $supplier_price = !empty($_POST['supplier_price']) ? floatval(str_replace('.', ',', $_POST['supplier_price'])) : null; // updated currency format to EURO
+    $quantity          = intval($_POST['quantity'] ?? 1);
+    $customer_price    = floatval(str_replace(',', '.', $_POST['customer_price'] ?? '0'));
+    $supplier_price    = !empty($_POST['supplier_price']) ? floatval(str_replace(',', '.', $_POST['supplier_price'])) : null;
     $supplier_discount = !empty($_POST['supplier_discount']) ? intval($_POST['supplier_discount']) : null;
-    $supplier_paid = isset($_POST['supplier_paid']) ? 1 : 0;
-    $origin = $db->real_escape_string($_POST['origin'] ?? '');
-    $added_by = intval($_SESSION['user_id'] ?? 0);
+    $supplier_paid     = isset($_POST['supplier_paid']) ? 1 : 0;
+    $origin            = $db->real_escape_string($_POST['origin'] ?? '');
+    $added_by          = intval($_SESSION['user_id'] ?? 0);
 
     if ($action === 'add_part') {
         $stmt = $db->prepare("INSERT INTO vehicle_service_parts (service_id, description, quantity, customer_price, supplier_price, supplier_discount, supplier_paid, origin, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -82,7 +82,7 @@ if ($action === 'add_part' || $action === 'edit_part') {
     
     if ($part_id <= 0 || $service_id <= 0) die(json_encode(['error' => 'Invalid part or service ID']));
 
-    $stmt = $db->prepare("DELETE FROM vehicle_service_parts WHERE id = ? AND service_id = ?");
+    $stmt = $db->prepare("UPDATE vehicle_service_parts SET deleted = 1 WHERE id = ? AND service_id = ?");
     if (!$stmt) die(json_encode(['error' => 'Database error: ' . $db->error]));
 
     $stmt->bind_param('ii', $part_id, $service_id);
