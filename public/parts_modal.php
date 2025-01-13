@@ -140,6 +140,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderValue = document.getElementById('slider_value');
     const markupInfo = document.getElementById('markup_info');
 
+    function resetMarkupElements() {
+        markupSlider.disabled = true;
+        markupSlider.value = 30;
+        sliderValue.textContent = '30';
+        markupInfo.textContent = '';
+    }
+
+    function updateSliderState() {
+        markupSlider.disabled = !supplierPriceInput.value;
+        if (!supplierPriceInput.value) {
+            markupInfo.textContent = '';
+        }
+    }
+
     function calculateMarkup() {
         const supplierPrice = parseFloat(supplierPriceInput.value) || 0;
         const customerPrice = parseFloat(customerPriceInput.value) || 0;
@@ -162,14 +176,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    supplierPriceInput.addEventListener('input', function() {
-        markupSlider.disabled = !this.value;
-        if (this.value) updateCustomerPrice();
-        else {
-            markupInfo.textContent = '';
-            customerPriceInput.value = '';
-        }
-    });
+    supplierPriceInput.addEventListener('input', updateSliderState);
+    document.getElementById('partForm').addEventListener('reset', resetMarkupElements);
+    
+    // Initial state
+    resetMarkupElements();
 
     markupSlider.addEventListener('input', function() {
         sliderValue.textContent = this.value;

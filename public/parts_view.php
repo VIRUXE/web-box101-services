@@ -4,14 +4,18 @@ if ($service_id <= 0) return;
 echo <<<HTML
 <script>
 function openPartModal() {
-    document.getElementById('partForm').reset();
+    const form = document.getElementById('partForm');
+    form.reset();
     document.getElementById('part_id').value = '';
     document.getElementById('form_action').value = 'add_part';
     document.getElementById('modalTitle').textContent = 'Adicionar Peça';
+    document.getElementById('markup_slider').disabled = true;
     document.getElementById('partModal').classList.add('is-active');
 }
 
 function closePartModal() {
+    const form = document.getElementById('partForm');
+    form.reset();
     document.getElementById('partModal').classList.remove('is-active');
 }
 
@@ -30,7 +34,9 @@ function editPart(partId) {
             form.description.value = part.description;
             form.quantity.value = part.quantity;
             form.customer_price.value = part.customer_price;
-            form.supplier_price.value = part.supplier_price || '';
+            const supplierPriceInput = form.querySelector('input[name="supplier_price"]');
+            supplierPriceInput.value = part.supplier_price || '';
+            supplierPriceInput.dispatchEvent(new Event('input'));
             form.supplier_discount.value = part.supplier_discount || '';
             form.origin.value = part.origin || '';
             form.supplier_paid.checked = part.supplier_paid === 1;
