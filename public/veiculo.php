@@ -56,7 +56,6 @@ if ($matricula) {
                             <th>Data/Hora</th>
                             <th>Kms</th>
                             <th>Estado</th>
-                            <th class="is-hidden-mobile">Status</th>
                             <th class="is-hidden-mobile">Criado por</th>
                             <th>Preço</th>
                         </tr>
@@ -66,46 +65,42 @@ if ($matricula) {
 
         $query = $db->query("
             SELECT 
-                vs.id,
-                vs.state,
-                vs.active,
-                vs.starting_odometer,
-                DATE_FORMAT(vs.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
+                service.id,
+                service.state,
+                service.starting_odometer,
+                DATE_FORMAT(service.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
                 CONCAT(u.first_name, ' ', u.last_name) as created_by,
-                COALESCE(SUM(vsi.price), 0) as total_price
-            FROM vehicle_services vs
-            LEFT JOIN vehicle_service_items vsi ON vs.id = vsi.service_id
-            LEFT JOIN users u ON vs.created_by = u.id
-            WHERE vs.matricula = '$matricula'
-            GROUP BY vs.id
-            ORDER BY vs.created_at DESC
+                COALESCE(SUM(item.price), 0) as total_price
+            FROM vehicle_services service
+            LEFT JOIN vehicle_service_items item ON service.id = item.service_id
+            LEFT JOIN users u ON service.created_by = u.id
+            WHERE service.matricula = '$matricula'
+            GROUP BY service.id
+            ORDER BY service.state ASC, service.created_at DESC
         ");
 
         $services_count = $query->num_rows;
 
         while ($service = $query->fetch_object()) {
             $state_tag = match($service->state) {
-                'PENDING' => 'is-warning',
+                'PENDING'           => 'is-warning',
                 'AWAITING_APPROVAL' => 'is-warning',
-                'APPROVED' => 'is-success',
-                'IN_PROGRESS' => 'is-info',
-                'COMPLETED' => 'is-success',
-                'CANCELLED' => 'is-danger',
-                default => 'is-light'
+                'APPROVED'          => 'is-success',
+                'IN_PROGRESS'       => 'is-info',
+                'COMPLETED'         => 'is-dark',
+                'CANCELLED'         => 'is-danger',
+                default             => 'is-light'
             };
             
             $state_text = match($service->state) {
-                'PENDING' => 'Pendente',
+                'PENDING'           => 'Pendente',
                 'AWAITING_APPROVAL' => 'Aguarda Aprovação',
-                'APPROVED' => 'Aprovado',
-                'IN_PROGRESS' => 'Em Progresso',
-                'COMPLETED' => 'Concluído',
-                'CANCELLED' => 'Cancelado',
-                default => $service->state
+                'APPROVED'          => 'Aprovado',
+                'IN_PROGRESS'       => 'Em Progresso',
+                'COMPLETED'         => 'Concluído',
+                'CANCELLED'         => 'Cancelado',
+                default             => $service->state
             };
-            
-            $active_tag = $service->active ? 'is-success' : 'is-danger';
-            $active_text = $service->active ? 'Ativo' : 'Inativo';
             
             echo <<<HTML
                 <tr>
@@ -113,7 +108,6 @@ if ($matricula) {
                     <td><a href="servico.php?id={$service->id}">{$service->created_at}</a></td>
                     <td>{$service->starting_odometer}</td>
                     <td><span class="tag $state_tag is-normal">$state_text</span></td>
-                    <td class="is-hidden-mobile"><span class="tag $active_tag is-normal">$active_text</span></td>
                     <td class="is-hidden-mobile">{$service->created_by}</td>
                     <td>{$service->total_price}€</td>
                 </tr>
