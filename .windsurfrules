@@ -1,6 +1,16 @@
-Use HEREDOC for outputting HTML.
-Use MySQLi for database queries, that is established in/database.php. Not forgetting to check /database.sql when creating new queries.
-Use Bulma for styling.
-Use PHP 8.4 or higher.
-Strings literals should be in European Portuguese.
-Don't try to include PHP syntax in HEREDOC.
+<GENERAL>
+1. Use PHP 8.4 or higher.
+2. Use HEREDOC for outputting HTML.
+3. Use Bulma for styling.
+4. String literals should be in European Portuguese.
+</GENERAL>
+
+<DATABASE>
+1. Use MySQLi for database queries.
+2. Database connection is established in /database.php.
+3. Check /database.sql when creating new queries.
+</DATABASE>
+
+<CODING>
+1. Don't include PHP tags in HEREDOC.
+</CODING>
