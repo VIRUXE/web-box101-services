@@ -1,0 +1,59 @@
+/* Global Styles */
+.navbar-item.is-active {
+    background-color: #f5f5f5;
+    color: #363636;
+}
+
+/* DateTime Display */
+.datetime-display {
+    color: #7a7a7a;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.time-display {
+    font-family: monospace;
+    font-size: 1.1em;
+}
+
+.datetime-mobile {
+    display: none;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    .datetime-desktop {
+        display: none;
+    }
+    
+    .datetime-mobile {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .navbar-brand {
+        flex: 1;
+        justify-content: space-between;
+    }
+}
+
+/* Navigation Dropdown */
+.navbar-item.has-dropdown:hover .navbar-dropdown {
+    display: block;
+}
+
+.navbar-dropdown .navbar-item {
+    padding-right: 1rem;
+}
+
+.navbar-dropdown .navbar-item .icon {
+    margin-right: 0.5rem;
+}
+
+/* Button Styles */
+.button .icon {
+    margin-right: 0.3rem;
+}
