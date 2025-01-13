@@ -50,7 +50,7 @@ while ($item = $items_query->fetch_object()) {
         $actions = '<span class="tag is-info is-light">A aguardar aprovação</span>';
 
     $status_tag = match($item->status) {
-        'NOT_STARTED' => 'is-light',
+        'NOT_STARTED' => 'is-white',
         'STARTED'     => 'is-info',
         'PAUSED'      => 'is-warning',
         'FAILED'      => 'is-danger',
@@ -59,7 +59,7 @@ while ($item = $items_query->fetch_object()) {
     };
 
     $status_text = match($item->status) {
-        'NOT_STARTED' => 'Não Iniciado',
+        'NOT_STARTED' => 'Por Iniciar',
         'STARTED'     => 'Em Curso',
         'PAUSED'      => 'Em Pausa',
         'FAILED'      => 'Falhou',
