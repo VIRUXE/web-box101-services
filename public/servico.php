@@ -51,11 +51,9 @@ if ($id) {
             client.last_name as client_last_name,
             client.phone as client_phone,
             client.email as client_email,
-            service.created_at,
             COALESCE(SUM(servicePart.customer_price), 0) as parts_total,
             COALESCE(SUM(serviceItem.price), 0) as labor_total,
-            (COALESCE(SUM(servicePart.customer_price), 0) + COALESCE(SUM(serviceItem.price), 0)) as total_cost,
-            service.paid_amount
+            (COALESCE(SUM(servicePart.customer_price), 0) + COALESCE(SUM(serviceItem.price), 0)) as total_cost
         FROM vehicle_services service
         LEFT JOIN vehicles vehicle ON service.matricula = vehicle.matricula
         LEFT JOIN users creator ON service.created_by = creator.id
@@ -68,6 +66,9 @@ if ($id) {
 
     if ($query->num_rows) {
         $service = $query->fetch_object();
+
+        $starting_date = $service->starting_date ?? 'N/D';
+        $ending_date   = $service->ending_date ?? 'N/D';
 
         $paid_amount = number_format($service->paid_amount ?? 0, 2, ',', '.');
         
@@ -107,7 +108,7 @@ if ($id) {
         $status = match($service->state) {
             'PENDING' => ['text' => 'Pendente', 'class' => 'is-warning', 'meaning' => 'Não foi enviado para o cliente.'],
             'AWAITING_APPROVAL' => ['text' => 'Aguarda Aprovação', 'class' => 'is-warning', 'meaning' => 'A aguardar pelo cliente.'],
-            'APPROVED' => ['text' => 'Aprovado', 'class' => 'is-success', 'meaning' => 'Aprovado e a aguardar execução.'],
+            'APPROVED' => ['text' => 'Aprovado', 'class' => 'is-success', 'meaning' => 'A aguardar execução.'],
             'IN_PROGRESS' => ['text' => 'Em Progresso', 'class' => 'is-info', 'meaning' => 'Serviço em andamento.'],
             'COMPLETED' => ['text' => 'Concluído', 'class' => 'is-success', 'meaning' => 'O serviço foi concluído.'],
             'CANCELLED' => ['text' => 'Cancelado', 'class' => 'is-danger', 'meaning' => 'O serviço foi cancelado.'],
@@ -118,6 +119,7 @@ if ($id) {
             <div class="columns is-vcentered mb-4">
                 <div class="column">
                     <h1 class="title is-3 mb-0">Serviço #{$service->id}</h1>
+                    <p class="subtitle is-6 is-italic has-text-grey">Criado por {$service->created_by_name} em {$service->created_at}</p>
                 </div>
                 <div class="column is-12-mobile is-narrow-tablet">
                     <div class="buttons is-right">
@@ -144,8 +146,8 @@ if ($id) {
                         <h2 class="title is-4">Estado do Serviço</h2>
                         <div class="content">
                             <p><strong>Estado:</strong> <span class="tag {$status['class']}">{$status['text']}</span> <span class="has-text-grey is-size-7 has-text-weight-medium">{$status['meaning']}</span></p>
-                            <p><strong>Criado por:</strong> {$service->created_by_name}</p>
-                            <p><strong>Criado em:</strong> {$service->created_at}</p>
+                            <p><strong>Data para Iniciar:</strong> {$starting_date}</p>
+                            <p><strong>Data para Finalizar:</strong> {$ending_date}</p>
                             <p><strong>Última atualização:</strong> {$service->last_update}</p>
                         </div>
                     </div>
