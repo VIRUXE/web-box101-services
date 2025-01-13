@@ -109,6 +109,8 @@ CREATE TABLE IF NOT EXISTS `vehicle_services` (
   `starting_odometer` int(11) DEFAULT NULL,
   `finished_odometer` int(11) DEFAULT NULL,
   `paid_amount` decimal(10,2) DEFAULT NULL,
+  `updated_by` int(10) unsigned DEFAULT NULL COMMENT 'User who last modified the record',
+  `updated_at` datetime DEFAULT NULL COMMENT 'When the record was last modified',
   PRIMARY KEY (`id`),
   KEY `matricula` (`matricula`),
   CONSTRAINT `fk_matricula` FOREIGN KEY (`matricula`) REFERENCES `vehicles` (`matricula`) ON DELETE NO ACTION ON UPDATE NO ACTION
