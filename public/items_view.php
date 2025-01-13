@@ -41,10 +41,13 @@ while ($item = $items_query->fetch_object()) {
     $total_items_cost += $item->price;
         
     $actions = '';
-    if ($item->status == 'NOT_STARTED') $actions .= "<button class='button is-info is-small action-btn' data-action='start' data-item-id='{$item->id}'><span class='icon is-small'><i class='fas fa-play'></i></span></button>";
-    if ($item->status == 'PAUSED') $actions .= "<button class='button is-info is-small action-btn' data-action='resume' data-item-id='{$item->id}'><span class='icon is-small'><i class='fas fa-play'></i></span></button>";
-    if ($item->status == 'STARTED') $actions .= "<button class='button is-warning is-small action-btn' data-action='pause' data-item-id='{$item->id}'><span class='icon is-small'><i class='fas fa-pause'></i></span></button>";
-    if ($item->status == 'STARTED' || $item->status == 'PAUSED') $actions .= "<button class='button is-success is-small action-btn' data-action='finish' data-item-id='{$item->id}'><span class='icon is-small'><i class='fas fa-check'></i></span></button>";
+    if ($item->service_state !== 'PENDING' && $item->service_state !== 'AWAITING_APPROVAL') {
+        if ($item->status == 'NOT_STARTED') $actions .= "<button class='button is-info is-small action-btn' data-action='start' data-item-id='{$item->id}'><span class='icon is-small'><i class='fas fa-play'></i></span></button>";
+        if ($item->status == 'PAUSED') $actions .= "<button class='button is-info is-small action-btn' data-action='resume' data-item-id='{$item->id}'><span class='icon is-small'><i class='fas fa-play'></i></span></button>";
+        if ($item->status == 'STARTED') $actions .= "<button class='button is-warning is-small action-btn' data-action='pause' data-item-id='{$item->id}'><span class='icon is-small'><i class='fas fa-pause'></i></span></button>";
+        if ($item->status == 'STARTED' || $item->status == 'PAUSED') $actions .= "<button class='button is-success is-small action-btn' data-action='finish' data-item-id='{$item->id}'><span class='icon is-small'><i class='fas fa-check'></i></span></button>";
+    } else
+        $actions = '<span class="tag is-info is-light">A aguardar aprovação</span>';
 
     $status_tag = match($item->status) {
         'NOT_STARTED' => 'is-light',
