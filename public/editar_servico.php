@@ -24,6 +24,7 @@ if ($_POST) {
     $starting_date = !empty($_POST['starting_date']) ? $_POST['starting_date'] : NULL;
     $state = $_POST['state'];
     $client_id = !empty($_POST['client_id']) ? (int)$_POST['client_id'] : NULL;
+    $paid_amount = !empty($_POST['paid_amount']) ? (float)$_POST['paid_amount'] : NULL;
     $action = $_POST['action'];
 
     try {
@@ -112,6 +113,15 @@ if ($id) {
                                     <option value="CANCELLED" {$cancelledSelected}>Cancelado</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-narrow is-2">
+                    <div class="field is-horizontal">
+                        <label class="label mr-2">Valor Pago</label>
+                        <div class="control has-icons-left">
+                            <span class="icon is-small is-left"><i class="fas fa-euro-sign"></i></span>
+                            <input class="input" type="number" name="paid_amount" value="{$service->paid_amount}" placeholder="Digite o valor pago" required>
                         </div>
                     </div>
                 </div>
