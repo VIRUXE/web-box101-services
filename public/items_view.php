@@ -2,9 +2,11 @@
 $items_query = $db->query("
     SELECT
         vsi.*,
-        CONCAT(u.first_name, ' ', u.last_name) as created_by_name
+        CONCAT(u.first_name, ' ', u.last_name) as created_by_name,
+        vs.state as service_state
     FROM vehicle_service_items vsi
     LEFT JOIN users u ON vsi.created_by = u.id
+    LEFT JOIN vehicle_services vs ON vsi.service_id = vs.id
     WHERE vsi.service_id = {$service_id}
     ORDER BY vsi.id DESC
 ");
