@@ -177,13 +177,9 @@ HTML;
                     <div class="column is-2">
                         <div class="field">
                             <label class="label">Preço</label>
-                            <div class="columns is-mobile is-gapless">
-                                <div class="column">
-                                    <input class="input" type="number" id="new-price" step="0.01" min="0">
-                                </div>
-                                <div class="column is-narrow" style="padding-left:5px;padding-top:8px">
-                                    €
-                                </div>
+                            <div class="control has-icons-left">
+                                <span class="icon is-small is-left"><i class="fas fa-euro-sign"></i></span>
+                                <input class="input" type="number" id="new-price" step="0.01" min="0">
                             </div>
                         </div>
                     </div>
