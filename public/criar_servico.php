@@ -242,7 +242,6 @@ HTML;
 
 include 'footer.php';
 ?>
-
 <script>
 const collapsible = document.querySelector('.collapsible');
 const content = collapsible.querySelector('.content');
@@ -306,18 +305,18 @@ clientSearch.addEventListener('input', function() {
     }
 
     searchTimeout = setTimeout(() => {
-        fetch(`search_clients.php?q=${encodeURIComponent(query)}`)
+        fetch(`api/search_clients.php?pesquisa=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
                 clientResults.innerHTML = '';
 				
-                if (data.length > 0) {
-                    data.forEach(client => {
+                if (data.clients && data.clients.length > 0) {
+                    data.clients.forEach(client => {
                         const div = document.createElement('div');
                         div.className = 'p-2 hover:bg-gray-100 cursor-pointer';
-                        div.innerHTML = `${client.first_name} ${client.last_name} (${client.email || client.phone})`;
+                        div.innerHTML = `${client.first_name} ${client.last_name || ''} (${client.email || client.phone})`;
                         div.onclick = () => {
-                            clientSearch.value = `${client.first_name} ${client.last_name}`;
+                            clientSearch.value = `${client.first_name} ${client.last_name || ''}`;
                             clientId.value = client.id;
                             clientResults.style.display = 'none';
                         };
@@ -327,6 +326,10 @@ clientSearch.addEventListener('input', function() {
                 } else {
                     clientResults.style.display = 'none';
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                clientResults.style.display = 'none';
             });
     }, 300);
 });

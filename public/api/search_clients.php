@@ -14,20 +14,10 @@ if (!User::isLogged()) {
 $search = isset($_GET['pesquisa']) ? $db->real_escape_string($_GET['pesquisa']) : NULL;
 
 try {
-    if (!$search || strlen($search) < 2) {
-        echo json_encode(['clients' => []]);
-        return;
-    }
+    $where_clause = "";
+    if ($search && strlen($search) >= 2) $where_clause = "WHERE first_name LIKE '%$search%' OR last_name LIKE '%$search%' OR email LIKE '%$search%' OR phone LIKE '%$search%' OR nif LIKE '%$search%'";
 
-    $query = $db->query("
-        SELECT id, first_name, last_name, email, phone 
-        FROM users 
-        WHERE first_name LIKE '%$search%' 
-            OR last_name LIKE '%$search%' 
-            OR email LIKE '%$search%' 
-            OR phone LIKE '%$search%'
-        LIMIT 25
-    ");
+    $query = $db->query("SELECT id, first_name, last_name, email, phone, nif, address, notes FROM users $where_clause ORDER BY first_name, last_name LIMIT 25");
 
     if (!$query) throw new Exception($db->error);
 
