@@ -21,8 +21,6 @@ $model     = '';
 $colour    = '';
 $trim      = '';
 
-include 'components/brands_datalist.php';
-
 echo <<<HTML
 <section class="section">
 	<div class="container">
@@ -97,7 +95,7 @@ echo <<<HTML
 						<div class="field-body">
 							<div class="field">
 								<p class="control">
-									<input class="input" type="number" name="year" value="$year" minlength="2" maxlength="4"5pattern="\d{2}|\d{4}" max="9999" step="1" placeholder="00 ou 0000">
+									<input class="input" type="number" name="year" value="$year" minlength="2" maxlength="4" pattern="\d{2}|\d{4}" max="9999" step="1" placeholder="00 ou 0000">
 								</p>
 							</div>
 						</div>
@@ -123,8 +121,7 @@ echo <<<HTML
 						<div class="field-body">
 							<div class="field">
 								<p class="control">
-
-									<input class="input" type="text" id="brand"name="brand" value="$brand" onkeyup="forceCapitalize(event)" required>
+									<input class="input" type="text" id="brand" name="brand" value="$brand" onkeyup="forceCapitalize(event)" required list="brand">
 								</p>
 							</div>
 						</div>
@@ -200,6 +197,22 @@ echo <<<HTML
 </section>
 <script>
 	const forceCapitalize = e => e.target.value = e.target.value.toLowerCase().replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+
+	// Load brands into datalist
+	fetch('/api/get_brands.php')
+		.then(response => response.json())
+		.then(data => {
+			const datalist = document.createElement('datalist');
+			datalist.id = 'brand';
+			data.brands.forEach(brand => {
+				const option = document.createElement('option');
+				option.value = brand;
+				option.textContent = brand;
+				datalist.appendChild(option);
+			});
+			document.body.appendChild(datalist);
+		})
+		.catch(error => console.error('Error loading brands:', error));
 
 	// Enforce rules on "year" input. Must be 2 or 4 digits
 	document.querySelector('input[name="year"]').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4));
