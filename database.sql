@@ -202,6 +202,51 @@ END//
 DELIMITER ;
 SET SQL_MODE=@OLDTMP_SQL_MODE;
 
+-- Trigger to set service as IN_PROGRESS when an item changes to STARTED
+DELIMITER //
+CREATE TRIGGER trg_service_item_started 
+AFTER UPDATE ON vehicle_service_items
+FOR EACH ROW
+BEGIN
+    IF NEW.status = 'STARTED' AND OLD.status = 'NOT_STARTED' THEN
+        UPDATE vehicle_services 
+        SET state = 'IN_PROGRESS'
+        WHERE id = NEW.service_id 
+        AND state != 'COMPLETED';
+    END IF;
+END//
+
+-- Trigger to set service as COMPLETED when all items are SUCCESS
+CREATE TRIGGER trg_service_items_completed 
+AFTER UPDATE ON vehicle_service_items
+FOR EACH ROW
+BEGIN
+    DECLARE items_count INT;
+    DECLARE success_count INT;
+    
+    IF NEW.status = 'SUCCESS' THEN
+        -- Count total items for this service
+        SELECT COUNT(*) INTO items_count
+        FROM vehicle_service_items
+        WHERE service_id = NEW.service_id;
+        
+        -- Count items with SUCCESS status
+        SELECT COUNT(*) INTO success_count
+        FROM vehicle_service_items
+        WHERE service_id = NEW.service_id
+        AND status = 'SUCCESS';
+        
+        -- If all items are SUCCESS, mark service as COMPLETED
+        IF items_count = success_count THEN
+            UPDATE vehicle_services 
+            SET state = 'COMPLETED'
+            WHERE id = NEW.service_id;
+        END IF;
+    END IF;
+END//
+
+DELIMITER ;
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

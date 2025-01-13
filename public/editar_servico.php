@@ -211,8 +211,6 @@ if ($id) {
                                     <option value="PENDING" {$pendingSelected}>Pendente</option>
                                     <option value="AWAITING_APPROVAL" {$awaitingApprovalSelected}>Aguardando Aprovação</option>
                                     <option value="APPROVED" {$approvedSelected}>Aprovado</option>
-                                    <option value="IN_PROGRESS" {$inProgressSelected}>Em Progresso</option>
-                                    <option value="COMPLETED" {$completedSelected}>Concluído</option>
                                     <option value="CANCELLED" {$cancelledSelected}>Cancelado</option>
                                 </select>
                             </div>
