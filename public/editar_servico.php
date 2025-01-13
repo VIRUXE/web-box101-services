@@ -209,7 +209,7 @@ if ($id) {
                             <div class="select">
                                 <select name="state">
                                     <option value="PENDING" {$pendingSelected}>Pendente</option>
-                                    <option value="AWAITING_APPROVAL" {$awaitingApprovalSelected}>Aguardando Aprovação</option>
+                                    <option value="AWAITING_APPROVAL" {$awaitingApprovalSelected}>Aguardar Aprovação</option>
                                     <option value="APPROVED" {$approvedSelected}>Aprovado</option>
                                     <option value="CANCELLED" {$cancelledSelected}>Cancelado</option>
                                 </select>
@@ -366,4 +366,47 @@ clientSearch.addEventListener('input', function() {
 });
 
 document.addEventListener('click', e => !clientSearch.contains(e.target) && !clientResults.contains(e.target) && (clientResults.style.display = 'none'));
+
+// Service items functionality
+const itemsList = document.getElementById('items-list');
+const newDescription = document.getElementById('new-description');
+const newPrice = document.getElementById('new-price');
+const totalAmount = document.getElementById('total-amount');
+
+function addItem() {
+    if (!newDescription.value || !newPrice.value) return;
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>
+            <input type="hidden" name="items[description][]" value="${newDescription.value}">
+            ${newDescription.value}
+        </td>
+        <td>
+            <input type="hidden" name="items[price][]" value="${newPrice.value}">
+            ${parseFloat(newPrice.value).toFixed(2)}€
+        </td>
+        <td>
+            <button type="button" class="button is-small is-danger" onclick="this.closest('tr').remove(); updateTotal();">
+                <span class="icon"><i class="fas fa-trash"></i></span>
+            </button>
+        </td>
+    `;
+    
+    itemsList.appendChild(row);
+    updateTotal();
+    
+    newDescription.value = '';
+    newPrice.value = '';
+}
+
+function updateTotal() {
+    const prices = Array.from(document.getElementsByName('items[price][]')).map(input => parseFloat(input.value) || 0);
+    const total = prices.reduce((sum, price) => sum + price, 0);
+    totalAmount.textContent = total.toFixed(2) + '€';
+}
+
+function setAction(action) {
+    document.getElementById('submitAction').value = action;
+}
 </script>
