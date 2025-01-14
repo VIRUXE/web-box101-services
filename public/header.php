@@ -136,7 +136,7 @@ if (User::isLogged()) {
                     </a>
                     <div class="navbar-dropdown">
                         <a href="criar_veiculo.php" class="navbar-item">
-                            <span class="icon"><i class="fas fa-car-plus"></i></span>
+                            <span class="icon"><i class="fas fa-car"></i></span>
                             <span>Novo Veículo</span>
                         </a>
                         <a href="criar_cliente.php" class="navbar-item">
