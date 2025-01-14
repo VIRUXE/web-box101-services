@@ -23,28 +23,28 @@ $months = [
 
 // Portuguese weekday names
 $weekdays = [
-    'Sunday' => 'domingo',
-    'Monday' => 'segunda-feira',
-    'Tuesday' => 'terça-feira',
+    'Sunday'    => 'domingo',
+    'Monday'    => 'segunda-feira',
+    'Tuesday'   => 'terça-feira',
     'Wednesday' => 'quarta-feira',
-    'Thursday' => 'quinta-feira',
-    'Friday' => 'sexta-feira',
-    'Saturday' => 'sábado'
+    'Thursday'  => 'quinta-feira',
+    'Friday'    => 'sexta-feira',
+    'Saturday'  => 'sábado'
 ];
 
-$weekday = $weekdays[$currentTime->format('l')];
-$day = $currentTime->format('j');
-$month = $months[(int)$currentTime->format('n')];
+$weekday    = $weekdays[$currentTime->format('l')];
+$day        = $currentTime->format('j');
+$month      = $months[(int)$currentTime->format('n')];
 $shortMonth = $shortMonths[(int)$currentTime->format('n')];
-$year = $currentTime->format('Y');
-$timeStr = $currentTime->format('H:i:s');
+$year       = $currentTime->format('Y');
+$timeStr    = $currentTime->format('H:i:s');
 
-$dateInPortuguese = "{$weekday}, {$day} de {$month} de {$year}";
+$dateInPortuguese      = "{$weekday}, {$day} de {$month} de {$year}";
 $shortDateInPortuguese = "{$day} {$shortMonth}";
-$timestamp = $currentTime->getTimestamp();
+$timestamp             = $currentTime->getTimestamp();
 
-$currentPage = basename($_SERVER['PHP_SELF']);
-$activeIndex = $currentPage === 'index.php' ? ' is-active' : '';
+$currentPage    = basename($_SERVER['PHP_SELF']);
+$activeIndex    = $currentPage === 'index.php' ? ' is-active' : '';
 $activeVeiculos = $currentPage === 'veiculos.php' ? ' is-active' : '';
 $activeClientes = $currentPage === 'clientes.php' ? ' is-active' : '';
 

@@ -1,5 +1,7 @@
 <?php
 include_once '../User.class.php';
+include_once '../Service.class.php';
+include_once '../ServiceState.enum.php';
 
 session_start();
 
@@ -20,37 +22,30 @@ HTML;
 if ($_POST) {
 	$matricula = $_POST['matricula'];
 	$starting_date = !empty($_POST['starting_date']) ? $_POST['starting_date'] : NULL;
-	$state = $_POST['state'];
+	$state = ServiceState::from($_POST['state']);
 	$client_id = !empty($_POST['client_id']) ? (int)$_POST['client_id'] : NULL;
 	$action = $_POST['action'];
 	$starting_odometer = !empty($_POST['starting_odometer']) ? (int)$_POST['starting_odometer'] : NULL;
 
-	try {
-		$db->begin_transaction();
+	$service = Service::create(
+		$matricula,
+		$logged_user->id,
+		$state,
+		$client_id,
+		$starting_date,
+		$starting_odometer
+	);
 
-		$stmt = $db->prepare("INSERT INTO vehicle_services (matricula, client_id, starting_date, created_by, state, starting_odometer) VALUES (?, ?, ?, ?, ?, ?)");
-		$stmt->bind_param("sisssi", $matricula, $client_id, $starting_date, $logged_user->id, $state, $starting_odometer);
-		$stmt->execute();
-		
-		if (!$db->affected_rows) throw new Exception('Erro ao criar serviço');
-		
-		$service_id = $db->insert_id;
-		
+	if ($service) {
 		if (isset($_POST['items'])) {
-			$stmt = $db->prepare("INSERT INTO vehicle_service_items (service_id, description, price, created_by) VALUES (?, ?, ?, ?)");
-			
 			foreach ($_POST['items']['description'] as $i => $desc) {
 				$price = $_POST['items']['price'][$i];
-				$stmt->bind_param("isdi", $service_id, $desc, $price, $logged_user->id);
-				$stmt->execute();
+				$service->addItem($desc, $price);
 			}
 		}
-
-		$db->commit();
-		header("Location: " . ($action === 'create_and_see' ? "servico.php?id=$service_id" : "veiculo.php?matricula=$matricula"));
-	} catch (Exception $e) {
-		$db->rollback();
-		echo '<div class="notification is-danger">Erro: ' . $e->getMessage() . '</div>';
+		header("Location: " . ($action === 'create_and_see' ? "servico.php?id={$service->getId()}" : "veiculo.php?matricula=$matricula"));
+	} else {
+		echo '<div class="notification is-danger">Erro ao criar serviço</div>';
 	}
 }
 
@@ -211,7 +206,7 @@ if ($matricula) {
 						</div>
 						<div class="column is-2">
 							<div class="field" style="margin-top: 1.9rem">
-								<button type="button" class="button is-info is-fullwidth" onclick="addItem()">Adicionar</button>
+								<button type="button" class="button is-info is-fullwidth" onclick="addItem()">Adicionar Item</button>
 							</div>
 						</div>
 					</div>
@@ -221,8 +216,8 @@ if ($matricula) {
 			<div class="field">
 				<div class="control">
 					<input type="hidden" name="action" id="submitAction" value="">
-					<button type="submit" class="button is-success" onclick="setAction('create_and_see')">Criar e Ver</button>
-					<button type="submit" class="button is-success" onclick="setAction('create')">Criar</button>
+					<button type="submit" class="button is-success" onclick="setAction('create_and_see')">Criar e Visualizar</button>
+					<button type="submit" class="button is-success" onclick="setAction('create')">Criar e Voltar</button>
 					<a href="veiculo.php?matricula={$matricula}" class="button is-text">Voltar</a>
 				</div>
 			</div>
@@ -266,8 +261,7 @@ function addItem() {
 			<input type="hidden" name="items[price][]" value="${price}">
 		</td>
 		<td style="width: 15%">
-			<button type="button" class="button is-small is-danger is-outlined" 
-					onclick="this.closest('tr').remove(); calculateTotal()">Remover</button>
+			<button type="button" class="button is-small is-danger is-outlined" onclick="this.closest('tr').remove(); calculateTotal()"><span class="icon"><i class="fas fa-trash"></i></span></button>
 		</td>
 	`;
 	

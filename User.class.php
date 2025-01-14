@@ -38,6 +38,13 @@ class User {
         $this->active     = (bool) $user['active'];
     }
 
+    public static function getById(int $id): ?User {
+        global $db;
+
+        $query = $db->query("SELECT * FROM users WHERE id = $id;");
+        return $query->num_rows ? new User($query->fetch_assoc()) : NULL;
+    }
+
     public function getEmail(): string {
         return $this->email ?? 'N/D';
     }
@@ -86,7 +93,7 @@ class User {
         };
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return "{$this->first_name} {$this->last_name}";
     }
 
