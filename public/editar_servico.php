@@ -271,41 +271,34 @@ HTML;
                     </table>
                 </div>
             </div>
+HTML;
 
-            <div class="box">
-                <h4 class="title is-5">Adicionar Item</h4>
-                <div class="columns">
-                    <div class="column is-8">
-                        <div class="field">
-                            <label class="label">Descrição</label>
-                            <div class="control">
-                                <input class="input" type="text" id="new-description">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column is-2">
-                        <div class="field">
-                            <label class="label">Preço</label>
-                            <div class="control has-icons-left">
-                                <span class="icon is-small is-left"><i class="fas fa-euro-sign"></i></span>
-                                <input class="input" type="number" id="new-price" step="0.01" min="0">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column is-2">
-                        <div class="field" style="margin-top: 1.9rem">
-                            <button type="button" class="button is-info is-fullwidth" onclick="addItem()">Adicionar Item</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        echo require '../components/service-item-form.php';
 
-            <div class="field mt-6">
-                <div class="control">
+        echo <<<HTML
+            <div class="field is-grouped is-grouped-multiline mt-5">
+                <div class="control is-expanded">
                     <input type="hidden" name="action" id="submitAction" value="">
-                    <button type="submit" class="button is-success" onclick="setAction('save_and_see')">Guardar e Visualizar</button>
-                    <button type="submit" class="button is-success" onclick="setAction('save')">Guardar e Voltar</button>
-                    <a href="servico.php?id={$id}" class="button is-text">Voltar</a>
+                    <div class="buttons">
+                        <button type="submit" class="button is-success is-fullwidth-mobile" onclick="setAction('save_and_see')">
+                            <span class="icon">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                            <span>Guardar e Visualizar</span>
+                        </button>
+                        <button type="submit" class="button is-info is-fullwidth-mobile" onclick="setAction('save')">
+                            <span class="icon">
+                                <i class="fas fa-save"></i>
+                            </span>
+                            <span>Guardar</span>
+                        </button>
+                        <a href="veiculo.php?matricula={$service->getMatricula()}" class="button is-fullwidth-mobile">
+                            <span class="icon">
+                                <i class="fas fa-times"></i>
+                            </span>
+                            <span>Cancelar</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </form>
@@ -390,7 +383,7 @@ function addItem() {
             ${parseFloat(newPrice.value).toFixed(2)}€
         </td>
         <td>
-            <button type="button" class="button is-small is-danger" onclick="this.closest('tr').remove(); updateTotal();">
+            <button type="button" class="button is-small is-danger" onclick="this.closest('tr').remove(); updateTotal()">
                 <span class="icon"><i class="fas fa-trash"></i></span>
             </button>
         </td>

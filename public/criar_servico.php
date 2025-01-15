@@ -1,7 +1,7 @@
 <?php
-include_once '../User.class.php';
-include_once '../Service.class.php';
-include_once '../ServiceState.enum.php';
+require_once '../User.class.php';
+require_once '../Service.class.php';
+require_once '../ServiceState.enum.php';
 
 session_start();
 
@@ -11,8 +11,8 @@ $logged_user = User::getLogged();
 
 if (!$logged_user->isAdmin()) header('Location: index.php');
 
-include '../database.php';
-include 'header.php';
+require '../database.php';
+require 'header.php';
 
 echo <<<HTML
 <section class="section">
@@ -52,11 +52,11 @@ if ($_POST) {
 $matricula = $_GET['matricula'] ?? NULL;
 		
 if ($matricula) {
-	include '../database.php';
+	require '../database.php';
 	$query = $db->query("SELECT * FROM vehicles WHERE matricula = '$matricula'");
 
 	if ($query->num_rows) {
-		include '../Vehicle.class.php';
+		require '../Vehicle.class.php';
 
 		$vehicle = new Vehicle($query->fetch_assoc());
 
@@ -184,41 +184,34 @@ if ($matricula) {
 					</table>
 				</div>
 			</div>
-				<div class="box">
-					<h4 class="title is-5">Adicionar Item</h4>
-					<div class="columns">
-						<div class="column is-8">
-							<div class="field">
-								<label class="label">Descrição</label>
-								<div class="control">
-									<input class="input" type="text" id="new-description">
-								</div>
-							</div>
-						</div>
-						<div class="column is-2">
-							<div class="field">
-								<label class="label">Preço</label>
-								<div class="control has-icons-left">
-									<span class="icon is-small is-left">€</span>
-									<input class="input" type="number" id="new-price" step="0.01" min="0">
-								</div>
-							</div>
-						</div>
-						<div class="column is-2">
-							<div class="field" style="margin-top: 1.9rem">
-								<button type="button" class="button is-info is-fullwidth" onclick="addItem()">Adicionar Item</button>
-							</div>
-						</div>
-					</div>
-				</div>
+HTML;
 
-				<div class="field mt-6">
-			<div class="field">
-				<div class="control">
+echo require '../components/service-item-form.php';
+
+echo <<<HTML
+			<div class="field is-grouped is-grouped-multiline mt-5">
+				<div class="control is-expanded">
 					<input type="hidden" name="action" id="submitAction" value="">
-					<button type="submit" class="button is-success" onclick="setAction('create_and_see')">Criar e Visualizar</button>
-					<button type="submit" class="button is-success" onclick="setAction('create')">Criar e Voltar</button>
-					<a href="veiculo.php?matricula={$matricula}" class="button is-text">Voltar</a>
+					<div class="buttons">
+						<button type="submit" class="button is-success is-fullwidth-mobile" onclick="setAction('create_and_see')">
+							<span class="icon">
+								<i class="fas fa-eye"></i>
+							</span>
+							<span>Criar e Visualizar</span>
+						</button>
+						<button type="submit" class="button is-info is-fullwidth-mobile" onclick="setAction('create')">
+							<span class="icon">
+								<i class="fas fa-save"></i>
+							</span>
+							<span>Criar</span>
+						</button>
+						<a href="veiculo.php?matricula=$matricula" class="button is-fullwidth-mobile">
+							<span class="icon">
+								<i class="fas fa-times"></i>
+							</span>
+							<span>Cancelar</span>
+						</a>
+					</div>
 				</div>
 			</div>
 		</form>
@@ -231,7 +224,7 @@ echo <<<HTML
 </section>
 HTML;
 
-include 'footer.php';
+require 'footer.php';
 ?>
 <script>
 const collapsible = document.querySelector('.collapsible');

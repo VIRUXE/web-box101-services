@@ -55,7 +55,7 @@ echo <<<HTML
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Serviços BOX101</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma/css/bulma.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
 HTML;
@@ -69,26 +69,24 @@ if (User::isLogged()) {
             const startDate = new Date(startTime * 1000);
             
             function updateTime() {
-                const now = new Date();
-                const hours = now.getHours().toString().padStart(2, '0');
+                const now     = new Date();
+                const hours   = now.getHours().toString().padStart(2, '0');
                 const minutes = now.getMinutes().toString().padStart(2, '0');
                 const seconds = now.getSeconds().toString().padStart(2, '0');
-                timeDisplays.forEach(display => {
-                    display.textContent = `\${hours}:\${minutes}:\${seconds}`;
-                });
+                timeDisplays.forEach(display => display.textContent = `\${hours}:\${minutes}:\${seconds}`);
             }
             
             // Update immediately and then every second
             updateTime();
             setInterval(updateTime, 1000);
+        });
 
-            // Burger menu functionality
-            const burger = document.querySelector('.navbar-burger');
-            const menu = document.querySelector('.navbar-menu');
-            burger.addEventListener('click', () => {
-                burger.classList.toggle('is-active');
-                menu.classList.toggle('is-active');
-            });
+        // Burger menu functionality
+        const burger = document.querySelector('.navbar-burger');
+        const menu   = document.querySelector('.navbar-menu');
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('is-active');
+            menu.classList.toggle('is-active');
         });
     </script>
 HTML;

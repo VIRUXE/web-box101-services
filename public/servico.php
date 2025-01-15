@@ -50,17 +50,24 @@ if ($id) {
     $query = $db->query("SELECT COALESCE(SUM(price), 0) as total FROM vehicle_service_items WHERE service_id = {$service->getId()}");
     $labor = $query->fetch_object();
 
-    $state      = $service->getState();
-    $stateLabel = $state->label();
-    $stateColor = $state->color();
-
-    $starting_date         = $service->getStartingDate() ?? 'N/D';
-    $ending_date           = $service->getEndingDate() ?? 'N/D';
+    $state                 = $service->getState();
+    $state_label           = $state->label();
+    $state_color           = $state->color();
     $total_cost            = $parts->customer_total + $labor->total;
     $paid_amount           = $service->getPaidAmount() ?? 0;
     $minimum_to_break_even = $parts->supplier_total + $labor->total;
+    $tip                   = max(0, $paid_amount - $total_cost);
     $profit                = $paid_amount - $minimum_to_break_even;
+    $profit_class          = match(true) {
+        $paid_amount < $minimum_to_break_even => 'has-text-danger',
+        $paid_amount < $total_cost => 'has-text-warning',
+        default => 'has-text-success'
+    };
+    $profit_string = "{$profit}€";
+    if ($tip > 0) $profit_string .= " (+{$tip}€ gorjeta)";
 
+    $starting_date     = $service->getStartingDate() ?? 'N/D';
+    $ending_date       = $service->getEndingDate() ?? 'N/D';
     $starting_odometer = $service->getStartingOdometer() ?: 'N/D';
     $finished_odometer = $service->getFinishedOdometer() ?: 'N/D';
 
@@ -69,16 +76,17 @@ if ($id) {
             <div class="column">
                 <h1 class="title is-3 mb-0">Serviço <span class="has-text-grey-dark">#{$service->getId()}</span></h1>
                 <p class="subtitle is-6 is-italic has-text-grey">Criado em {$service->getCreatedAt()}</p>
-            </div>
-            <div class="column is-narrow">
                 <span class="tag is-large has-text-weight-bold"><a href="veiculo.php?matricula={$service->getMatricula()}">{$vehicle->plate}</a></span>
-            </div>
-            <div class="column is-narrow">
-                <span class="tag {$stateColor} is-medium">{$stateLabel}</span>
+                <span class="tag {$state_color} is-medium">{$state_label}</span>
             </div>
             <div class="column is-narrow">
                 <div class="buttons">
-                    <a href="imprimir_servico.php?id={$service->getId()}" class="button is-info">
+                    <button class="button" onclick="toggleSupplierCosts()" id="toggleCostsBtn">
+                        <span class="icon">
+                            <i class="fas fa-eye-slash"></i>
+                        </span>
+                    </button>
+                    <a href="imprimir_servico.php?id={$service->getId()}" class="button is-info" target="_blank">
                         <span class="icon is-small"><i class="fas fa-print"></i></span>
                         <span>Imprimir</span>
                     </a>
@@ -106,10 +114,10 @@ if ($id) {
                 <div class="box">
                     <h2 class="title is-5">Custos</h2>
                     <div class="content">
-                        <p><strong>Total em Peças</strong> <span class="tag"><span class="has-text-weight-bold mr-1">Cliente:</span> {$parts->customer_total}€</span> <span class="tag"><span class="has-text-weight-bold mr-1">Fornecedor:</span> {$parts->supplier_total}€</span></p>
+                        <p><strong>Total em Peças</strong> <span class="tag"><span class="has-text-weight-bold mr-1">Cliente:</span> {$parts->customer_total}€</span> <span class="tag supplier-cost"><span class="has-text-weight-bold mr-1">Fornecedor:</span> {$parts->supplier_total}€</span></p>
                         <p><strong>Total em Mão de Obra:</strong> {$labor->total}€</p>
                         <p><strong>Valor Pago:</strong> {$paid_amount}€ ({$total_cost}€)</p>
-                        <p><strong>Lucro:</strong> {$profit}€</p>
+                        <p class="has-text-weight-bold {$profit_class}"><strong>Lucro:</strong> {$profit_string}</p>
                     </div>
                 </div>
             </div>
@@ -131,3 +139,20 @@ HTML;
 
 include 'footer.php';
 ?>
+
+<script>
+let supplierCostsVisible = true;
+function toggleSupplierCosts() {
+    supplierCostsVisible = !supplierCostsVisible;
+    const icon = document.getElementById('toggleCostsBtn').querySelector('.fas');
+
+    icon.classList.toggle('fa-eye-slash');
+    icon.classList.toggle('fa-eye');
+    
+    document.querySelectorAll('.supplier-cost').forEach(el => el.style.display = supplierCostsVisible ? '' : 'none');
+}
+
+document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.supplier-cost').forEach(el => el.style.display = ''));
+</script>
+</body>
+</html>

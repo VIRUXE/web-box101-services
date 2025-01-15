@@ -114,10 +114,10 @@ echo <<<HTML
                 <th>Descrição</th>
                 <th>Quantidade</th>
                 <th>Preço do Cliente</th>
-                <th>Preço do Fornecedor</th>
-                <th>Desconto</th>
-                <th>Origem</th>
-                <th>Pago</th>
+                <th class="supplier-cost">Preço do Fornecedor</th>
+                <th class="supplier-cost">Desconto</th>
+                <th class="supplier-cost">Origem</th>
+                <th class="supplier-cost">Pago</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -144,10 +144,10 @@ while ($part = $result->fetch_object()) {
             </td>
             <td>{$part->quantity}</td>
             <td>€ {$customer_price}</td>
-            <td>€ {$supplier_price}</td>
-            <td>{$supplier_discount}</td>
-            <td>{$origin}</td>
-            <td>{$paid_status}</td>
+            <td class="supplier-cost">€ {$supplier_price}</td>
+            <td class="supplier-cost">{$supplier_discount}</td>
+            <td class="supplier-cost">{$origin}</td>
+            <td class="supplier-cost">{$paid_status}</td>
             <td>
                 <div class="buttons are-small">
                     <button class="button is-info" onclick="editPart({$part->id})"><span class="icon"><i class="fas fa-edit"></i></span></button>
@@ -167,7 +167,7 @@ echo <<<HTML
             <tr>
                 <th colspan="2" class="has-text-right">Total:</th>
                 <td>€ {$total_parts_cost}</td>
-                <td>€ {$total_supplier_cost}</td>
+                <td class="supplier-cost">€ {$total_supplier_cost}</td>
                 <td colspan="4"></td>
             </tr>
         </tfoot>
