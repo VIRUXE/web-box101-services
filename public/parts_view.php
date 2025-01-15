@@ -118,7 +118,7 @@ echo <<<HTML
                 <th class="supplier-cost">Desconto</th>
                 <th class="supplier-cost">Origem</th>
                 <th class="supplier-cost">Pago</th>
-                <th>Ações</th>
+                <th class="has-text-right">Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -142,14 +142,14 @@ while ($part = $result->fetch_object()) {
                     <p class="has-text-grey is-size-7">Adicionado por {$part->added_by_name}</p>
                 </div>
             </td>
-            <td>{$part->quantity}</td>
-            <td>€ {$customer_price}</td>
-            <td class="supplier-cost">€ {$supplier_price}</td>
-            <td class="supplier-cost">{$supplier_discount}</td>
-            <td class="supplier-cost">{$origin}</td>
-            <td class="supplier-cost">{$paid_status}</td>
+            <td class="is-vcentered">{$part->quantity}</td>
+            <td class="is-vcentered">€ {$customer_price}</td>
+            <td class="supplier-cost is-vcentered">€ {$supplier_price}</td>
+            <td class="supplier-cost is-vcentered">{$supplier_discount}</td>
+            <td class="supplier-cost is-vcentered">{$origin}</td>
+            <td class="supplier-cost is-vcentered">{$paid_status}</td>
             <td>
-                <div class="buttons are-small">
+                <div class="buttons are-small is-justify-content-flex-end">
                     <button class="button is-info" onclick="editPart({$part->id})"><span class="icon"><i class="fas fa-edit"></i></span></button>
                     <button class="button is-danger" onclick="deletePart({$part->id})"><span class="icon"><i class="fas fa-trash"></i></span></button>
                 </div>

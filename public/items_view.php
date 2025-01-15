@@ -17,7 +17,7 @@ echo <<<HTML
     <hr>
     <h2 class="title is-4">Itens</h2>
     <div class="table-container">
-        <table class="table is-fullwidth is-hoverable is-striped is-narrow">
+        <table class="table is-fullwidth is-hoverable is-striped is-narrow is-vcentered">
             <thead>
                 <tr>
                     <th>Descrição</th>
@@ -82,9 +82,9 @@ while ($item = $items_query->fetch_object()) {
                 {$starting_notes}
                 {$ending_notes}
             </td>
-            <td class="has-text-right"><span class="tag {$status_tag}">{$status_text}</span></td>
-            <td class="has-text-right">{$item->price}€</td>
-            <td class="has-text-right">
+            <td class="has-text-right is-vcentered"><span class="tag {$status_tag}">{$status_text}</span></td>
+            <td class="has-text-right is-vcentered">{$item->price}€</td>
+            <td class="has-text-right is-vcentered">
                 <div class="buttons are-small is-justify-content-flex-end">
                     {$actions}
                 </div>
