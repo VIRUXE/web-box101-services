@@ -79,19 +79,24 @@ if ($id) {
                 <span class="tag is-large has-text-weight-bold"><a href="veiculo.php?matricula={$service->getMatricula()}">{$vehicle->plate}</a></span>
                 <span class="tag {$state_color} is-medium">{$state_label}</span>
             </div>
-            <div class="column is-narrow">
+            <div class="column is-narrow is-align-items-end">
                 <div class="buttons">
                     <button class="button" onclick="toggleSupplierCosts()" id="toggleCostsBtn">
-                        <span class="icon">
-                            <i class="fas fa-eye-slash"></i>
-                        </span>
+                        <span class="icon"><i class="fas fa-eye-slash"></i></span>
+                    </button>
+                    <button class="button" onclick="deleteService({$service->getId()})">
+                        <span class="icon"><i class="fas fa-trash"></i></span>
+                    </button>
+                    <button id="shareBtn" class="button">
+                        <span class="icon"><i class="fas fa-share"></i></span>
+                        <span>Partilhar</span>
                     </button>
                     <a href="imprimir_servico.php?id={$service->getId()}" class="button is-info" target="_blank">
-                        <span class="icon is-small"><i class="fas fa-print"></i></span>
+                        <span class="icon"><i class="fas fa-print"></i></span>
                         <span>Imprimir</span>
                     </a>
                     <a href="editar_servico.php?id={$service->getId()}" class="button is-primary">
-                        <span class="icon is-small"><i class="fas fa-edit"></i></span>
+                        <span class="icon"><i class="fas fa-edit"></i></span>
                         <span>Editar</span>
                     </a>
                 </div>
@@ -153,6 +158,37 @@ function toggleSupplierCosts() {
 }
 
 document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.supplier-cost').forEach(el => el.style.display = ''));
+
+const formatCurrency = value => new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value);
+
+async function shareService() {
+    const serviceText = `🚗 *Serviço #${<?= $service->getId(); ?>}*\n
+📅 <?= $service->getCreatedAt(); ?>\n
+🚘 *Veículo*
+Marca: <?= $vehicle->brand; ?>\r
+Modelo: <?= $vehicle->model; ?>\r
+Matrícula: <?= $vehicle->plate; ?>\r
+Cor: <?= $vehicle->colour; ?>\n
+💰 *Valores*
+Peças: ${formatCurrency(<?= $parts->customer_total; ?>)}
+Mão de obra: ${formatCurrency(<?= $labor->total; ?>)}
+Total: ${formatCurrency(<?= $parts->customer_total + $labor->total; ?>)}\n
+Estado: <?= $service->getState()->label(); ?>`;
+
+    try {
+        await navigator.clipboard.writeText(serviceText);
+        const originalHtml = this.innerHTML;
+        this.innerHTML = '<span class="icon"><i class="fas fa-check"></i></span><span>Copiado!</span>';
+        this.classList.add('is-success');
+        setTimeout(() => {
+            this.innerHTML = originalHtml;
+            this.classList.remove('is-success');
+        }, 2000);
+    } catch (err) {
+        alert('Erro ao copiar para área de transferência: ' + err);
+    }
+}
+document.getElementById('shareBtn').addEventListener('click', shareService);
 </script>
 </body>
 </html>
